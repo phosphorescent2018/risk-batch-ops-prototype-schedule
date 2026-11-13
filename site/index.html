@@ -1541,7 +1541,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-lower .bd-report-side .bd-row{justify-content:flex-start;gap:18px;}
 .bd-lower .bd-report-side .bd-row b{text-align:left;}
 </style>
-<style id="bdNotifyOneLine">.bd-note{display:grid;grid-template-columns:40px minmax(0,1fr) minmax(0,1.25fr) auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed #EDF0F5;}
+<style id="bdNotifyOneLine">.bd-note{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed #EDF0F5;}
 .bd-note-name{font-size:12.5px;color:#0F172A;font-weight:650;white-space:nowrap;}
 .bd-note-detail{font-size:11.5px;color:#8794A6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
@@ -4878,7 +4878,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       '<div class="bd-note">'+
         '<span class="bd-note-time">'+t+'</span>'+
         '<span class="bd-note-name">'+EV[k]+'</span>'+
-        '<span class="bd-note-detail">'+CH[k]+' · '+r+'</span>'+
         '<span class="bd-note-state">已推送</span>'+
       '</div>').join('')).join(''):'';
     const noteCount=hasRecords?defaultEvents.reduce((n,k)=>n+LOG[k].length,0):0;
