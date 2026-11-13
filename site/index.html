@@ -4885,6 +4885,23 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const notifyBlock=hasRecords
       ? '<div class="bd-notify-list">'+noteRows+'</div>'
       : '<div class="bd-notify-empty"><b>暂无告警通知记录</b><span>批次尚未启动，暂无通知产生。</span></div>';
+    const runningNow=b.run==='运行中' && !fin;
+    const phReport='<div class="bd-report-head"><b>批次事件报告</b><span>PDF</span></div><div class="bd-notify-empty"><b>跑批完成后生成</b><span>终态后自动生成事件报告</span></div>';
+    const phNotify='<div class="bd-report-head"><b>告警通知记录</b><span>—</span></div><div class="bd-notify-empty"><b>暂无告警通知记录</b><span>记录将在跑批过程中产生</span></div>';
+    const lowerBlock=runningNow
+      ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+phReport+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
+      : '<div class="bd-sec bd-lower">'+
+        '<div class="bd-report-col">'+
+          '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
+          '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
+            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
+            '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
+        '</div>'+
+        '<div class="bd-notify-col">'+
+          '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasRecords?noteCount+' 条':'0 条')+'</span></div>'+
+          notifyBlock+
+        '</div>'+
+      '</div>';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-top">'+
           '<div class="bd-exec-progress">'+
@@ -4897,18 +4914,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         stateBar+
       '</div>'+
       keyInfo+
-      '<div class="bd-sec bd-lower">'+
-        '<div class="bd-report-col">'+
-          '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
-          '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
-            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
-            '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
-        '</div>'+
-        '<div class="bd-notify-col">'+
-          '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasRecords?noteCount+' 条':'0 条')+'</span></div>'+
-          notifyBlock+
-        '</div>'+
-      '</div>';
+      lowerBlock;
   }
   function reportPanel(b){
     const done=['已完成','部分失败'].includes(b.run);
@@ -4940,7 +4946,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const speed=Math.round(180+(people%37));
     const totalMin=Math.round(people/(speed*10000/60));
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge('运行中','blue');}
-    const t0=performance.now();
+    let t0=performance.now();
     function frame(now){
       const k=Math.min(1,(now-t0)/DEMO_MS);
       const p=100*(k<1?k:1);
@@ -4959,11 +4965,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(el('bdFootWait')) el('bdFootWait').textContent=fmtCount(Math.max(0,shards-done-failN));
       const clip=el('bdClipRect'); if(clip) clip.setAttribute('width', String(1000*k));
       const cells=el('bdDense'); if(cells){ const kids=cells.children; for(let i=0;i<432;i++){ const c=clsOf(i,p); if(kids[i].className!==c) kids[i].className=c; } }
-      if(p>=100){
-        demoFinished=true; demoP=100;
-        render(curId,{animate:false});
-        raf=null; return;
-      }
+      if(p>=100){ t0=now; }
       raf=requestAnimationFrame(frame);
     }
     raf=requestAnimationFrame(frame);
