@@ -2474,6 +2474,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
               <div class="form-field"><label>BusinessID</label><select class="select mono" id="dtBusinessId"><option value="MTN_Uganda">MTN_Uganda</option><option value="MTN_Ghana">MTN_Ghana</option><option value="MTN_CDI">MTN_CDI</option></select></div>
               <div class="form-field"><label>产品</label><select class="select" id="dtProduct"><option>MoMoAdvance</option><option>NuKash</option><option>BL</option></select></div>
               <div class="form-field full"><label>Task 描述</label><textarea id="dtDesc" placeholder="说明该 Task 的稳定业务目标与默认产出"></textarea></div>
+<div class="form-field full"><label>人群组</label><input class="input mono" id="dtDataScope" /></div>
             </div></div>
           </div>
           <div class="card td-card">
@@ -4395,6 +4396,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if($('#taskReportScene')) $('#taskReportScene').value='贷前';
       if($('#taskReportGen')) $('#taskReportGen').value='自动生成';
       if($('#taskVersionType')) $('#taskVersionType').value='正式';
+      taskSelectedGroups.clear(); taskSelectedGroups.add('limitIncreaseGroupV1');
+      if($('#runGroupSelect')) $('#runGroupSelect').value='limitIncreaseGroupV1';
+      if($('#taskGroupPicker')) renderGroupPicker('taskGroupPicker','runGroupSelect');
+      syncTaskRunInput();
     }
     function openTaskDrawer() {
       const t=tasks.find(x=>x.id===state.currentTaskId)||tasks[0];
@@ -4725,7 +4730,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         tasks.unshift({
           id:'TRF_'+String(Math.max(400,...tasks.map(x=>parseInt(String(x.id).replace(/[^0-9]/g,''),10)||0))+1), switchOn:true, name,
           opco:'MTN Uganda', businessId:$('#taskBusinessId')?.value||'MTN_Uganda', product:$('#taskProduct')?.value||'MoMoAdvance',
-          type:'风控调额', dataScope:$('#runGroupSelect')?.value||'limitIncreaseGroupV1',
+          type:'风控调额', dataScope:([...taskSelectedGroups].join(' · ')||$('#runGroupSelect')?.value||'limitIncreaseGroupV1'),
           strategy:$('#taskStrategySelect')?.value||'UG-OD-Monthly', version:'v1.0',
           strategyVersion:$('#taskStrategyVersion')?.value||'1', versionType:$('#taskVersionType')?.value||'正式',
           reportScene:$('#taskReportScene')?.value||'贷前', reportGen:($('#taskReportScene')?.value==='无报告'?'—':($('#taskReportGen')?.value||'自动生成')),
@@ -5351,14 +5356,14 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
   /* ---------------- Task 详情 ---------------- */
   let detailTaskId=null, detailEditing=false;
-  const TD_FIELDS=['#dtName','#dtBusinessId','#dtProduct','#dtDesc','#dtStrategy','#dtVersionType','#dtVersion','#dtReportScene','#dtReportGen'];
+  const TD_FIELDS=['#dtName','#dtBusinessId','#dtProduct','#dtDesc','#dtDataScope','#dtStrategy','#dtVersionType','#dtVersion','#dtReportScene','#dtReportGen'];
   function renderDtNotifyEvents(){ /* 系统默认四类，静态提示，无需渲染 */ }
   function fillTaskDetail(t){
     const set=(s,v)=>{const el=document.querySelector(s);if(el)el.value=v==null?'':v;};
     set('#dtName',t.name); set('#dtId',t.id); set('#dtBusinessId',t.businessId||'MTN_Uganda'); set('#dtProduct',t.product); set('#dtDesc',t.description||'');
     set('#dtStrategy',TASK_STRATEGIES.includes(t.strategy)?t.strategy:TASK_STRATEGIES[0]);
     set('#dtVersionType',t.versionType||'正式'); set('#dtVersion',t.strategyVersion||'1');
-    set('#dtReportScene',t.reportScene||'贷前'); set('#dtReportGen',(t.reportGen&&t.reportGen!=='—')?t.reportGen:'自动生成');
+    set('#dtReportScene',t.reportScene||'贷前'); set('#dtReportGen',(t.reportGen&&t.reportGen!=='—')?t.reportGen:'自动生成'); set('#dtDataScope',t.dataScope||'—');
     const title=document.getElementById('tdTitle'); if(title) title.textContent=t.name;
     const sub=document.getElementById('tdSubtitle'); if(sub) sub.textContent=`${t.id} · ${t.opco||''} / ${t.product||''}`;
     renderDtNotifyEvents(t);
@@ -5397,6 +5402,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     if(OPCO_MAP[t.businessId]) t.opco=OPCO_MAP[t.businessId];
     t.product=document.getElementById('dtProduct')?.value||t.product;
     t.description=document.getElementById('dtDesc')?.value||'';
+t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     t.strategy=document.getElementById('dtStrategy')?.value||t.strategy;
     t.versionType=document.getElementById('dtVersionType')?.value||t.versionType;
     t.strategyVersion=document.getElementById('dtVersion')?.value||t.strategyVersion;
