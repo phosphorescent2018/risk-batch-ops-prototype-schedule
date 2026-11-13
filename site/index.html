@@ -4852,7 +4852,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
     const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
     const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
-    const stateBar=abnormal?'<div class="bd-statebar '+(b.run==='已终止'?'term':'bad')+'">'+abnormalText+'</div>':'';
+    const stateBar='';
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
     const keyInfo = !fin ? '' :
       '<div class="bd-sec bd-keyinfo">'+
