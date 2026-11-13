@@ -1565,6 +1565,20 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-notify-tags .tag{background:#fff;border:1px solid #dbe6f5;color:#3b5a86;padding:5px 10px;border-radius:7px;font-size:11px;}
 .bd-notify-static-sm{padding:9px 11px;}
 </style>
+<style id="listPagerStyle">
+.list-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:10px 14px;border-top:1px solid #EDF0F5;font-size:10.5px;color:#8794A6;}
+.list-pager button{height:24px;padding:0 10px;border-radius:6px;border:1px solid #E4E9F0;background:#fff;font-size:10.5px;color:#33415C;cursor:pointer;font-family:inherit;}
+.list-pager button:hover:not(:disabled){background:#F7F9FC;border-color:#D8E0EA;}
+.list-pager button:disabled{opacity:.45;cursor:not-allowed;}
+</style>
+<script>
+window.__listPage={task:1,batch:1};
+window.listPagerHtml=function(target,total,pg,pages){
+  return '<span>共 '+total+' 条 · 第 '+pg+'/'+pages+' 页</span>'
+    +'<button type="button" data-list-page="prev" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+'>上一页</button>'
+    +'<button type="button" data-list-page="next" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+'>下一页</button>';
+};
+</script>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1664,6 +1678,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
               <tbody id="taskTableBody"></tbody>
             </table>
           </div>
+          <div class="list-pager" id="taskPager"></div>
         </div>
       </section>
 
@@ -1945,6 +1960,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
+        <div class="list-pager" id="batchPager"></div>
       </section>
 
       <section class="page hidden" id="view-batch-detail" aria-labelledby="batchDetailTitle">
@@ -3527,10 +3543,16 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
-      filtered = filtered.slice(0,5);
+      const total=filtered.length, per=5, pages=Math.max(1,Math.ceil(total/per));
+      const lp=window.__listPage||{};
+      let pg=Math.min(Math.max(1,lp.batch||1),pages);
+      if(window.__listPage) window.__listPage.batch=pg;
+      filtered = filtered.slice((pg-1)*per, pg*per);
+      const pager=document.getElementById('batchPager');
+      if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('batch',total,pg,pages):'';
       const count = $('#batchCount');
-      if (count) count.textContent = `共 ${filtered.length} 条`;
-      const totalStat = $('#batchTotalStat'); if (totalStat) totalStat.textContent = filtered.length;
+      if (count) count.textContent = `共 ${total} 条`;
+      const totalStat = $('#batchTotalStat'); if (totalStat) totalStat.textContent = total;
       if(!filtered.length){ $('#batchTableBody').innerHTML = '<tr><td colspan="6"><div class="bl-empty">没有匹配的批次</div></td></tr>'; renderShardManagement(); return; }
       $('#batchTableBody').innerHTML = filtered.map(b => {
         const bs = batchStates[b.id] || batchStates.B20260624001;
@@ -5180,8 +5202,12 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const fr=document.getElementById('taskFilterReportScene')?.value||'';
     const rows=tasks.filter(t=>(!q||(t.name+' '+t.id+' '+(t.opco||'')+' '+t.strategy).toLowerCase().includes(q))
       &&(!fs||t.strategy===fs)&&(!fv||t.versionType===fv)&&(!fr||t.reportScene===fr));
-    box.innerHTML=rows.length?rows.map(t=>`
-      <tr>
+    const total=rows.length, per=5, pages=Math.max(1,Math.ceil(total/per));
+    const lp=window.__listPage||{};
+    let pg=Math.min(Math.max(1,lp.task||1),pages);
+    if(window.__listPage) window.__listPage.task=pg;
+    const pageRows=rows.slice((pg-1)*per,pg*per);
+    box.innerHTML=pageRows.length?pageRows.map(t=>`      <tr>
         <td data-col="name"><div class="task-name-cell">${t.name}</div></td>
         <td data-col="id"><span class="mono">${t.id}</span></td>
         <td data-col="strategy"><span class="tag mono">${t.strategy||'—'}</span></td>
@@ -5198,7 +5224,9 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           <button class="btn btn-sm danger" data-delete-task="${t.id}">删除</button>
         </div></td>
       </tr>`).join(''):'<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--ink-400)">没有符合条件的 Task</td></tr>';
-    const cnt=document.getElementById('taskCount'); if(cnt) cnt.textContent=`${rows.length} 个任务`;
+    const cnt=document.getElementById('taskCount'); if(cnt) cnt.textContent=`${total} 个任务`;
+    const pager=document.getElementById('taskPager');
+    if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('task',total,pg,pages):'';
     if(typeof applyCols==='function') applyCols();
   }
 
@@ -5781,6 +5809,38 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   window.schRunsHtml=schRunsHtml;
   renderSchedules();
 })(typeof tasks!=='undefined'?tasks:(window.tasks||[]), typeof batches!=='undefined'?batches:(window.batches||[]), typeof badge!=='undefined'?badge:(x=>String(x)), typeof toast!=='undefined'?toast:(()=>{}));
+</script>
+<script>
+(function(){
+  function rerender(t){
+    if(t==='task'){ if(typeof window.renderTasks==='function') window.renderTasks(document.getElementById('taskSearch')?.value||''); }
+    else if(typeof window.renderBatches==='function') window.renderBatches();
+  }
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('[data-list-page]'); if(!btn) return;
+    var t=btn.dataset.listTarget==='task'?'task':'batch';
+    var d=btn.dataset.listPage==='next'?1:-1;
+    if(!window.__listPage) window.__listPage={task:1,batch:1};
+    window.__listPage[t]=Math.max(1,(window.__listPage[t]||1)+d);
+    rerender(t);
+  });
+  ['taskSearch','batchSearch'].forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.addEventListener('input',function(){
+      var t=id==='taskSearch'?'task':'batch';
+      if(window.__listPage) window.__listPage[t]=1;
+      rerender(t);
+    });
+  });
+  ['taskFilterStrategy','taskFilterVersionType','taskFilterReportScene','batchStatusFilter'].forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    el.addEventListener('change',function(){
+      var t=id==='batchStatusFilter'?'batch':'task';
+      if(window.__listPage) window.__listPage[t]=1;
+      rerender(t);
+    });
+  });
+})();
 </script>
 </body>
 </html>
