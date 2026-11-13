@@ -2498,13 +2498,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <div class="modal-section">
           <div class="modal-section-title">执行配置</div>
           <div class="form-grid">
-            <div class="form-field full"><label>Batch Name <span class="req">*</span></label>
-              <input class="input" id="runBatchName" list="runBatchNameOptions" autocomplete="off" placeholder="自定义批次名称，如 11 月调额跑批" />
-              <datalist id="runBatchNameOptions">
-                <option value="Uganda OD 月度调额"></option>
-                <option value="Ghana BL 营销策略"></option>
-                <option value="CDI MoMo 评分跑批"></option>
-              </datalist>
+            <div class="form-field"><label>Batch Name <span class="req">*</span></label>
+              <input class="input" id="runBatchName" autocomplete="off" placeholder="输入 Batch Name" style="width:220px;max-width:220px;" />
             </div>
             <div class="form-field full"><label>执行方式</label>
               <select class="select" id="runExecMode" aria-label="执行方式" style="height:38px;width:220px;max-width:220px;"><option value="immediate">立即执行</option><option value="scheduled">预约执行</option></select>
@@ -5393,7 +5388,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const t=tasks.find(x=>x.id===id); if(!t) return;
     runTaskId=id; cmpSelectedId=null;
     const input=document.getElementById('cmpSearchInput'); if(input) input.value='';
-    const bn=document.getElementById('runBatchName'); if(bn){ const d=new Date(); bn.value=`${t.name||'Batch'} · ${fmtISODate(d)} 跑批`; }
+    const bn=document.getElementById('runBatchName'); if(bn) bn.value='';
     document.getElementById('cmpPicked')?.classList.remove('show');
     document.getElementById('cmpError')?.classList.remove('show');
     document.getElementById('cmpResults')?.classList.remove('show');
