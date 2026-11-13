@@ -4859,7 +4859,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
         '<div class="bd-kv-grid">'+
           kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
-          kv('业务日期',b.businessDate||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
+          kv('跑批创建时间',b.businessDate||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
           kv('开始时间',(b.businessDate||'—')+' '+hm(startD))+kv('结束时间',(b.businessDate||'—')+' '+hm(endD))+kv('总耗时',durationMin+' 分钟')+
           kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态','已生成')+
         '</div>'+
@@ -4974,7 +4974,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     el('bdTitle').textContent=b.id;
     {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
-    el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
+    el('bdMeta').innerHTML='<span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
