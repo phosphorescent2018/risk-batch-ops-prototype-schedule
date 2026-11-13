@@ -2252,13 +2252,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
             <div class="form-field" id="taskReportGenField"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div>
-          <div class="form-section">
-            <div class="section-title-row"><div><h3>通知与告警</h3><p>系统默认推送，无需配置。</p></div></div>
-            <div class="bd-notify-static">
-              <div class="bd-notify-static-t"><svg class="icon icon-sm"><use href="#i-bell"/></svg>默认推送以下 4 类通知</div>
-              <div class="bd-notify-tags"><span class="tag">切片异常</span><span class="tag">跑批中断/失败</span><span class="tag">跑批完成汇总</span><span class="tag">报告生成结果</span></div>
-            </div>
-          </div>
           <div class="form-section" style="display:none">
             <div class="section-title-row"><div><h3>Task 摘要</h3><p>运行输入与策略保持独立复用。</p></div></div>
             <div class="summary-grid" id="summaryGrid"></div>
@@ -2496,12 +2489,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             <div class="card-body"><div class="form-grid">
               <div class="form-field"><label>报告场景</label><select class="select" id="dtReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
               <div class="form-field" id="dtReportGenField"><label>报告生成</label><select class="select" id="dtReportGen"><option>自动生成</option><option>手动生成</option></select></div>
-            </div></div>
-          </div>
-          <div class="card td-card">
-            <div class="card-head"><div><h2>运行与通知</h2></div></div>
-            <div class="card-body"><div class="form-grid">
-              <div class="form-field full"><label>通知与告警</label><div class="bd-notify-static bd-notify-static-sm"><div class="bd-notify-static-t"><svg class="icon icon-sm"><use href="#i-bell"/></svg>系统默认推送以下 4 类通知，无需配置</div><div class="bd-notify-tags"><span class="tag">切片异常</span><span class="tag">跑批中断/失败</span><span class="tag">跑批完成汇总</span><span class="tag">报告生成结果</span></div></div></div>
             </div></div>
           </div>
         </div>
