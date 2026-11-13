@@ -1593,6 +1593,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 };
 </script>
 
+<style id="bdTermStyle">.bd-statebar.term{background:#FFF7EA;color:#9A5B00;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1963,6 +1965,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             
             <option value="成功">成功</option>
             <option value="失败">失败</option>
+            <option value="已终止">已终止</option>
           </select>
           <div class="col-picker"><button class="btn btn-sm" id="batchColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button><div class="col-panel hidden" id="batchColPanel"></div></div>
           <span class="bl-count" id="batchCount">共 0 条</span>
@@ -2999,7 +3002,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function renderManifestPostPanel(b){
       const el=$('#manifestPostContent'); if(!el) return;
       const s=getShardSummary(b);
-      if(!['已完成','部分失败','已停止'].includes(b.run)){el.innerHTML=`<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批结束后开放</strong>完成后检查结果完整性、失败分片、自动重试和消费门禁。</div></div></div>`;return;}
+      if(!['已完成','部分失败','已停止','已终止'].includes(b.run)){el.innerHTML=`<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批结束后开放</strong>完成后检查结果完整性、失败分片、自动重试和消费门禁。</div></div></div>`;return;}
       const blocked=s.permanent>0||b.run==='已停止';
       el.innerHTML=`<div class="shard-overview"><div class="shard-overview-card"><span>结果完整性</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'不完整':'完整'}</strong><small>${fmtCount(s.completed)} / ${fmtCount(s.total)} 分片完成</small></div><div class="shard-overview-card"><span>自动重试恢复</span><strong>${s.retried}</strong><small>正常运行无需人工</small></div><div class="shard-overview-card"><span>最终失败</span><strong style="color:${s.permanent?'var(--red-700)':'var(--teal-700)'}">${s.permanent}</strong><small>${s.permanent?'重试耗尽或不可恢复':'无失败分片'}</small></div><div class="shard-overview-card"><span>消费门禁</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'已阻断':'可消费'}</strong><small>${blocked?'请先处理失败分片':'结果完整，可进入处理'}</small></div></div><div class="card"><div class="card-head"><div><h2>跑后处理</h2><p>不展示全部 9,887 个分片，只展示阻断消费的失败项。</p></div><span class="badge ${blocked?'red':'green'}">${blocked?'需处理':'已通过'}</span></div><div class="card-body">${blocked?`<div class="decision-note" style="background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>${s.permanent} 个分片最终失败：</strong>可一键重试失败分片，不重开整批；如业务接受部分结果，需要走风险豁免后才能消费。</div><div class="evidence-action-bar"><button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败分片</button><button class="btn btn-sm">查看失败明细</button><button class="btn btn-sm">申请部分结果消费</button></div>`:'<div class="decision-note"><strong>结果完整：</strong>自动重试结果已计入最终结果，可以进入结果处理与消费。</div>'}</div></div>`; }
     function selectManifestPhase(phase='pre') {
@@ -3040,7 +3043,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(scanStrip){
         const total=m.checks.length, pass=counts.PASS||0, pending=counts.PENDING||0;
         let dot='',state='',copy='',riskBtn='';
-        if(['已完成','部分失败','运行中','已停止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
+        if(['已完成','部分失败','运行中','已停止','已终止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
         else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn='';}
         else if(b.run==='待风险确认'){dot='warn';state='存在风险 · 等待确认';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
         else if(b.run==='已就绪'){dot='green';state='100% 通过 · 可提前开始';copy='已满足启动条件。计划时间前可人工立即开始；到计划时间仍未启动则按自动跑批配置执行。';}
@@ -3177,7 +3180,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       btn.title=canStart?(warn?'存在 WARN，点击表示确认风险并开始':'清单检查通过，可手动开始'):'当前不满足手动启动条件';
       const eventReportBtn=$('#eventReportActionBtn');
       if(eventReportBtn){
-        const finished=b && ['已完成','部分失败','已停止'].includes(b.run);
+        const finished=b && ['已完成','部分失败','已停止','已终止'].includes(b.run);
         const generated=batchStates[b?.id]?.eventReportGenerated;
         eventReportBtn.disabled=!finished;
         eventReportBtn.style.display='';
@@ -3556,7 +3559,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
-      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
+      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
       let pg=Math.min(Math.max(1,lp.batch||1),pages);
@@ -3572,13 +3575,13 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const bs = batchStates[b.id] || batchStates.B20260624001;
         const manifest = getManifest(b.id);
         const verifyFailed = manifest.status==='FAILED';
-        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'};
-        const RUNCLS={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'};
+        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'};
+        const RUNCLS={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
         const runLabel=CANON[b.run]||b.run;
         const runClass=RUNCLS[runLabel]||'gray';
         const mc = manifestCounts(manifest);
         const isRunning = b.run === '运行中';
-        const isStopped = b.run === '已停止';
+        const isStopped = b.run === '已停止' || b.run === '已终止';
         const preRun = isPreRunBatch(b);
         const interventionLabel = bs.interventionApplied ? '已应用干预' : '干预';
         const pushLabel = bs.published ? (bs.pushStatus === 'partial' ? '部分失败' : '已消费') : '消费';
@@ -3601,7 +3604,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           actReport=ic('i-report',repLabel,`data-report-action="${b.id}"`,!finished);
           if(finished && bs.reportGenerated) actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
         }
-        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isStopped ? '<span class="badge amber">已停止</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
         const STARTED_STATES=['运行中','已完成','部分失败','已停止'];
         const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
         const successCount = runLabel==='成功' ? userCount
@@ -3672,13 +3675,13 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if (!b) return;
       const preRun = ['待启动','检查中','已就绪','待风险确认','门禁阻断','已排期'].includes(b.run);
       if (!preRun && b.run!=='运行中') return;
-      b.run = '已停止';
+      b.run = '已终止';
       b.runClass = 'amber';
       renderBatches();
       if (state.currentBatchId === id) applyBatchView(id);
-      toast(preRun ? 'Batch 已终止' : 'Batch 已停止',
+      toast('Batch 已终止',
         preRun ? `${id} 本次跑批已终止，不会进入跑批；记录与检查证据保留。`
-               : `${id} 已停止后续分片调度；已完成分片和处理结果保留。`);
+               : `${id} 已终止，后续分片不再调度；已完成分片和处理结果保留。`);
     }
 
     function retryFailedShard(id) {
@@ -4415,7 +4418,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       }
       const eventReportBtn = $('#eventReportActionBtn');
       if (eventReportBtn) {
-        const finished=['已完成','部分失败','已停止'].includes(b.run);
+        const finished=['已完成','部分失败','已停止','已终止'].includes(b.run);
         eventReportBtn.disabled = !finished;
         eventReportBtn.innerHTML = `${icon('file','icon icon-sm')}${!finished?'生成报告':bs.eventReportGenerated?'查看报告':'生成报告'}`;
         eventReportBtn.title = !finished?'跑批完成后可生成事件报告':bs.eventReportGenerated?'打开整批跑批事件报告':'生成整批跑批事件报告';
@@ -4493,7 +4496,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function handleEventReportAction(batchId) {
       const id=batchId||state.currentBatchId; const b=batches.find(x=>x.id===id); const bs=batchStates[id];
       if(!b||!bs) return;
-      if(!['已完成','部分失败','已停止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
+      if(!['已完成','部分失败','已停止','已终止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
       const btn=$('#eventReportActionBtn');
       const reportUrl=`./event-report.html?batch=${encodeURIComponent(id)}`;
       const openReportPage=()=>{
@@ -4797,6 +4800,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   const pctOf=b=>Math.max(0,Math.min(100,Number(b.progress)||0));
   const stateLabelOf=b=>{
     if(demoFinished||['已完成','成功'].includes(b.run)) return '成功';
+    if(b.run==='已终止') return '已终止';
     if(['部分失败','失败','已停止'].includes(b.run)) return '失败';
     if(['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run)) return '待启动';
     return '运行中';
@@ -4828,7 +4832,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const fin=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
+    const fin=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
     const abnormal=fin && !demoFinished && !['已完成','成功'].includes(b.run);
     const durationMin=Math.max(12,Math.round(people/900));
     const avgSpeed=(people/10000/(durationMin/60)).toFixed(1);
@@ -4847,8 +4851,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const waitBlock='<div class="bd-wait"><b>等待启动</b></div>';
     const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
     const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
-    const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告');
-    const stateBar=abnormal?'<div class="bd-statebar bad">'+abnormalText+'</div>':'';
+    const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
+    const stateBar=abnormal?'<div class="bd-statebar '+(b.run==='已终止'?'term':'bad')+'">'+abnormalText+'</div>':'';
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
     const keyInfo = !fin ? '' :
       '<div class="bd-sec bd-keyinfo">'+
@@ -4968,12 +4972,12 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const b=batches.find(x=>x.id===id); if(!b) return;
     curId=id;
     el('bdTitle').textContent=b.id;
-    {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'};
+    {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
     el('bdMeta').innerHTML='<span>业务日期 '+(b.businessDate||'—')+'</span><i>·</i><span>切片 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>'+(b.people||'—')+' 人</span>';
-    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
+    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const finalNow=['已完成','部分失败','已停止','成功','失败'].includes(b.run)||demoFinished;
+    const finalNow=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
     const animate = !(opts && opts.animate===false) && b.run==='运行中' && !finalNow;
     demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? 0 : null);
     el('bdBody').innerHTML=bodyFor(b);
