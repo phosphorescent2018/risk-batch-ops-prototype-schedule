@@ -1566,19 +1566,33 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-notify-static-sm{padding:9px 11px;}
 </style>
 <style id="listPagerStyle">
-.list-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:10px 14px;border-top:1px solid #EDF0F5;font-size:10.5px;color:#8794A6;}
-.list-pager button{height:24px;padding:0 10px;border-radius:6px;border:1px solid #E4E9F0;background:#fff;font-size:10.5px;color:#33415C;cursor:pointer;font-family:inherit;}
-.list-pager button:hover:not(:disabled){background:#F7F9FC;border-color:#D8E0EA;}
-.list-pager button:disabled{opacity:.45;cursor:not-allowed;}
+.list-pager{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:10px 14px;border-top:1px solid #EDF0F5;font-size:11px;color:#8794A6;}
+.lp-total{margin-right:6px;white-space:nowrap;}
+.lp-size,.lp-input{height:26px;border:1px solid #E4E9F0;border-radius:6px;background:#fff;color:#33415C;font-size:11px;font-family:inherit;}
+.lp-size{padding:0 6px;min-width:66px;cursor:pointer;}
+.lp-input{width:46px;text-align:center;padding:0 4px;}
+.lp-jump{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.lp-btn{width:26px;height:26px;padding:0;border-radius:6px;border:1px solid #E4E9F0;background:#fff;color:#5A6A80;font-size:15px;line-height:1;cursor:pointer;font-family:inherit;}
+.lp-btn:hover:not(:disabled){background:#F7F9FC;border-color:#D8E0EA;color:#2458C5;}
+.lp-btn:disabled{opacity:.4;cursor:not-allowed;}
 </style>
 <script>
 window.__listPage={task:1,batch:1};
-window.listPagerHtml=function(target,total,pg,pages){
-  return '<span>共 '+total+' 条 · 第 '+pg+'/'+pages+' 页</span>'
-    +'<button type="button" data-list-page="prev" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+'>上一页</button>'
-    +'<button type="button" data-list-page="next" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+'>下一页</button>';
+window.__listPageSize={task:5,batch:5};
+window.listPagerHtml=function(target,total,pg,pages,per){
+  per=per||5;
+  return '<span class="lp-total">共 '+total+' 条</span>'
+    +'<select class="lp-size" data-list-size="'+target+'" aria-label="Rows per page">'
+    + [5,10,20].map(function(n){return '<option value="'+n+'"'+(n===per?' selected':'')+'>'+n+' 条/页</option>';}).join('')
+    +'</select>'
+    +'<button type="button" class="lp-btn" data-list-page="first" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+' aria-label="First page" title="First page">«</button>'
+    +'<button type="button" class="lp-btn" data-list-page="prev" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+' aria-label="Previous page" title="Previous page">‹</button>'
+    +'<span class="lp-jump">第 <input class="lp-input" type="number" min="1" max="'+pages+'" value="'+pg+'" data-list-jump="'+target+'" aria-label="Page number"> / '+pages+' 页</span>'
+    +'<button type="button" class="lp-btn" data-list-page="next" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+' aria-label="Next page" title="Next page">›</button>'
+    +'<button type="button" class="lp-btn" data-list-page="last" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+' aria-label="Last page" title="Last page">»</button>';
 };
 </script>
+
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -3543,13 +3557,13 @@ window.listPagerHtml=function(target,total,pg,pages){
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
-      const total=filtered.length, per=5, pages=Math.max(1,Math.ceil(total/per));
+      const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
       let pg=Math.min(Math.max(1,lp.batch||1),pages);
       if(window.__listPage) window.__listPage.batch=pg;
       filtered = filtered.slice((pg-1)*per, pg*per);
       const pager=document.getElementById('batchPager');
-      if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('batch',total,pg,pages):'';
+      if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('batch',total,pg,pages,per):'';
       const count = $('#batchCount');
       if (count) count.textContent = `共 ${total} 条`;
       const totalStat = $('#batchTotalStat'); if (totalStat) totalStat.textContent = total;
@@ -5202,7 +5216,7 @@ window.listPagerHtml=function(target,total,pg,pages){
     const fr=document.getElementById('taskFilterReportScene')?.value||'';
     const rows=tasks.filter(t=>(!q||(t.name+' '+t.id+' '+(t.opco||'')+' '+t.strategy).toLowerCase().includes(q))
       &&(!fs||t.strategy===fs)&&(!fv||t.versionType===fv)&&(!fr||t.reportScene===fr));
-    const total=rows.length, per=5, pages=Math.max(1,Math.ceil(total/per));
+    const total=rows.length, per=(window.__listPageSize&&window.__listPageSize.task)||5, pages=Math.max(1,Math.ceil(total/per));
     const lp=window.__listPage||{};
     let pg=Math.min(Math.max(1,lp.task||1),pages);
     if(window.__listPage) window.__listPage.task=pg;
@@ -5226,7 +5240,7 @@ window.listPagerHtml=function(target,total,pg,pages){
       </tr>`).join(''):'<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--ink-400)">没有符合条件的 Task</td></tr>';
     const cnt=document.getElementById('taskCount'); if(cnt) cnt.textContent=`${total} 个任务`;
     const pager=document.getElementById('taskPager');
-    if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('task',total,pg,pages):'';
+    if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('task',total,pg,pages,per):'';
     if(typeof applyCols==='function') applyCols();
   }
 
@@ -5819,10 +5833,37 @@ window.listPagerHtml=function(target,total,pg,pages){
   document.addEventListener('click',function(e){
     var btn=e.target.closest('[data-list-page]'); if(!btn) return;
     var t=btn.dataset.listTarget==='task'?'task':'batch';
-    var d=btn.dataset.listPage==='next'?1:-1;
+    var d=btn.dataset.listPage;
     if(!window.__listPage) window.__listPage={task:1,batch:1};
-    window.__listPage[t]=Math.max(1,(window.__listPage[t]||1)+d);
+    if(d==='first') window.__listPage[t]=1;
+    else if(d==='last') window.__listPage[t]=9999;
+    else window.__listPage[t]=Math.max(1,(window.__listPage[t]||1)+(d==='next'?1:-1));
     rerender(t);
+  });
+  document.addEventListener('change',function(e){
+    var inp=e.target.closest('[data-list-jump]');
+    if(inp){
+      var t=inp.dataset.listJump;
+      var max=Math.max(1,parseInt(inp.max,10)||1);
+      var v=Math.min(max,Math.max(1,parseInt(inp.value,10)||1));
+      if(!window.__listPage) window.__listPage={task:1,batch:1};
+      window.__listPage[t]=v;
+      rerender(t);
+      return;
+    }
+    var sel=e.target.closest('[data-list-size]');
+    if(sel){
+      var st=sel.dataset.listSize;
+      if(!window.__listPageSize) window.__listPageSize={task:5,batch:5};
+      window.__listPageSize[st]=parseInt(sel.value,10)||5;
+      if(!window.__listPage) window.__listPage={task:1,batch:1};
+      window.__listPage[st]=1;
+      rerender(st);
+    }
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    var inp=e.target.closest('[data-list-jump]'); if(inp) inp.blur();
   });
   ['taskSearch','batchSearch'].forEach(function(id){
     var el=document.getElementById(id); if(!el) return;
@@ -5842,5 +5883,6 @@ window.listPagerHtml=function(target,total,pg,pages){
   });
 })();
 </script>
+
 </body>
 </html>
