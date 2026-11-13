@@ -1601,6 +1601,16 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 .bd-exec-metrics .bd-metric-live b{display:inline;font-size:40px;line-height:1.05;}
 .bd-exec-metrics .bd-metric-live i{display:inline;font-style:normal;font-size:12.5px;color:#8794A6;margin-top:0;}
 </style>
+<style id="batchNameStyle">
+#view-batches .bl-table th[data-bcol="id"]{width:11%;}
+#view-batches .bl-table th[data-bcol="name"]{width:17%;}
+#view-batches .bl-table th[data-bcol="task"]{width:17%;}
+#view-batches .bl-table th[data-bcol="users"]{width:10%;}
+#view-batches .bl-table th[data-bcol="rate"]{width:9%;}
+#view-batches .bl-table th[data-bcol="verify"]{width:11%;}
+#view-batches .bl-table th[data-bcol="run"]{width:10%;}
+#view-batches .bl-table th[data-bcol="actions"]{width:15%;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -1979,7 +1989,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
         <div class="bl-table">
           <table>
-            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
+            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="name">Batch Name</th><th data-bcol="task">Task Name</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
@@ -2488,6 +2498,14 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <div class="modal-section">
           <div class="modal-section-title">执行配置</div>
           <div class="form-grid">
+            <div class="form-field full"><label>Batch Name <span class="req">*</span></label>
+              <input class="input" id="runBatchName" list="runBatchNameOptions" autocomplete="off" placeholder="自定义批次名称，如 11 月调额跑批" />
+              <datalist id="runBatchNameOptions">
+                <option value="Uganda OD 月度调额"></option>
+                <option value="Ghana BL 营销策略"></option>
+                <option value="CDI MoMo 评分跑批"></option>
+              </datalist>
+            </div>
             <div class="form-field full"><label>执行方式</label>
               <select class="select" id="runExecMode" aria-label="执行方式" style="height:38px;width:220px;max-width:220px;"><option value="immediate">立即执行</option><option value="scheduled">预约执行</option></select>
             </div>
@@ -3564,7 +3582,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const q=(state.batchQuery||'').toLowerCase();
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
-      if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q));
+      if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q)||String(b.batchName||'').toLowerCase().includes(q));
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
@@ -3633,6 +3651,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           : verifyLabel==='待核验' ? 'gray' : 'green';
         return `<tr data-row-batch="${b.id}">
           <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
+          <td data-bcol="name"><div class="bl-task">${b.batchName||(taskName+' · '+(b.businessDate||b.expectedSliceDate||''))}</div></td>
           <td data-bcol="task"><div class="bl-task">${taskName}</div></td>
           <td data-bcol="users"><div class="bl-mono">${userCount?fmtCount(userCount):'—'}</div></td>
           <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
@@ -5025,7 +5044,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
 
   /* Batch 列表列设置 */
-  const BCOL_DEFS=[['task','Task Name'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
+  const BCOL_DEFS=[['name','Batch Name'],['task','Task Name'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
   const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
   ['success','gen','started','ended','duration','slice'].forEach(k=>bcolState[k]=false);
   function applyBatchCols(){
@@ -5374,6 +5393,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const t=tasks.find(x=>x.id===id); if(!t) return;
     runTaskId=id; cmpSelectedId=null;
     const input=document.getElementById('cmpSearchInput'); if(input) input.value='';
+    const bn=document.getElementById('runBatchName'); if(bn){ const d=new Date(); bn.value=`${t.name||'Batch'} · ${fmtISODate(d)} 跑批`; }
     document.getElementById('cmpPicked')?.classList.remove('show');
     document.getElementById('cmpError')?.classList.remove('show');
     document.getElementById('cmpResults')?.classList.remove('show');
@@ -5395,6 +5415,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const t=tasks.find(x=>x.id===runTaskId); if(!t) return;
     const slice=document.getElementById('runSliceDate')?.value||'';
     if(!slice){ toast('请选择切片日期','发起跑批前必须指定使用哪一天的切片。'); return; }
+    const batchName=(document.getElementById('runBatchName')?.value||'').trim();
+    if(!batchName){ toast('请填写 Batch Name','请为本次跑批填写一个 Batch Name。'); document.getElementById('runBatchName')?.focus(); return; }
     if(runExecMode==='scheduled'){
       const at=document.getElementById('runScheduleAt')?.value||'';
       if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
@@ -5409,7 +5431,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const id='B'+fmtISODate(now).replaceAll('-','')+String(batches.length+1).padStart(3,'0');
     const requestedAt=`${fmtISODate(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
     const scheduledAt=document.getElementById('runScheduleAt')?.value||'';
-    batches.unshift({ id, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
+    batches.unshift({ id, batchName, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
       requestedAt:runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):requestedAt,
       sliceAt:slice+' 21:50', compareBatch:(isNoReportTask(t)?null:cmpSelectedId), startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
