@@ -1558,6 +1558,13 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .td-modal .form-field textarea{min-height:64px;}
 .td-modal .modal-foot{padding:14px 24px;}
 </style>
+<style id="bdNotifyStatic">.bd-notify-static{border:1px solid #dce7f4;background:#f7fbff;border-radius:10px;padding:12px 14px;}
+.bd-notify-static-t{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:#33415C;}
+.bd-notify-static-t .icon{color:#2458C5;width:14px;height:14px;}
+.bd-notify-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.bd-notify-tags .tag{background:#fff;border:1px solid #dbe6f5;color:#3b5a86;padding:5px 10px;border-radius:7px;font-size:11px;}
+.bd-notify-static-sm{padding:9px 11px;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -2153,15 +2160,10 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             <div class="form-field" id="taskReportGenField"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div>
           <div class="form-section">
-            <div class="section-title-row"><div><h3>通知与告警 <span class="req">*</span></h3></div></div>
-            <div class="form-field"><label>推送场景</label>
-              <div class="cohort-list" id="taskNotifyEvents">
-                <button class="cohort-pill active" data-task-notify="SLICE_ANOMALY">切片异常</button>
-                <button class="cohort-pill" data-task-notify="BATCH_FAILED">跑批中断/失败</button>
-                <button class="cohort-pill" data-task-notify="BATCH_DONE">跑批完成汇总</button>
-                <button class="cohort-pill" data-task-notify="REPORT_RESULT">报告生成结果</button>
-                <button class="cohort-pill" data-task-notify="NO_PUSH">不推送</button>
-              </div>
+            <div class="section-title-row"><div><h3>通知与告警</h3><p>系统默认推送，无需配置。</p></div></div>
+            <div class="bd-notify-static">
+              <div class="bd-notify-static-t"><svg class="icon icon-sm"><use href="#i-bell"/></svg>默认推送以下 4 类通知</div>
+              <div class="bd-notify-tags"><span class="tag">切片异常</span><span class="tag">跑批中断/失败</span><span class="tag">跑批完成汇总</span><span class="tag">报告生成结果</span></div>
             </div>
           </div>
           <div class="form-section" style="display:none">
@@ -2406,7 +2408,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           <div class="card td-card">
             <div class="card-head"><div><h2>运行与通知</h2></div></div>
             <div class="card-body"><div class="form-grid">
-              <div class="form-field full"><label>通知事件类别 <span class="req">*</span></label><div class="cohort-list dt-notify" id="dtNotifyEvents"></div></div>
+              <div class="form-field full"><label>通知与告警</label><div class="bd-notify-static bd-notify-static-sm"><div class="bd-notify-static-t"><svg class="icon icon-sm"><use href="#i-bell"/></svg>系统默认推送以下 4 类通知，无需配置</div><div class="bd-notify-tags"><span class="tag">切片异常</span><span class="tag">跑批中断/失败</span><span class="tag">跑批完成汇总</span><span class="tag">报告生成结果</span></div></div></div>
             </div></div>
           </div>
         </div>
@@ -4612,8 +4614,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       else {
         const name=($('#taskNameInput')?.value||'').trim();
         if(!name){ toast('请填写 Task 名称','Task name 为必填项。'); $('#taskNameInput')?.focus(); return; }
-        const notifyPicked=[...document.querySelectorAll('#taskNotifyEvents .cohort-pill.active')];
-        if(!notifyPicked.length){ toast('请选择推送场景','至少选择一个场景，或选择「不推送」。'); return; }
         const execution=$('#taskExecutionMode .active')?.dataset.taskExecution||'immediate';
         tasks.unshift({
           id:'TRF_'+String(400+tasks.length), switchOn:true, name,
@@ -4623,7 +4623,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           strategyVersion:$('#taskStrategyVersion')?.value||'1', versionType:$('#taskVersionType')?.value||'正式',
           reportScene:$('#taskReportScene')?.value||'贷前', reportGen:($('#taskReportScene')?.value==='无报告'?'—':($('#taskReportGen')?.value||'自动生成')),
           description:$('#taskDesc')?.value||'',
-          notifyEvents:notifyPicked.map(el=>el.dataset.taskNotify),
+          notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],
           createdBy:'胡唐', createdAt:nowStamp(), updatedAt:nowStamp(),
           runMode:'Once', inputMode:'New', sourceBatch:'—', lastRequested:'未发起', status:'active', batches:0,
           scheduleMode:execution==='scheduled'?'预约':'立即', scheduleAt:execution==='scheduled'?($('#taskScheduleAt')?.value||'').replace('T',' '):'创建后发起',
@@ -4704,14 +4704,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       }
     });
     $$('[data-task-execution]').forEach(btn=>btn.addEventListener('click',()=>{$$('#taskExecutionMode [data-task-execution]').forEach(b=>b.classList.toggle('active',b===btn));const scheduled=btn.dataset.taskExecution==='scheduled';const badge=$('#executionModeBadge');if(badge)badge.textContent=scheduled?'预约':'立即';if($('#taskScheduleAtField'))$('#taskScheduleAtField').style.display=scheduled?'':'none';}));
-    $$('[data-task-notify]').forEach(btn=>btn.addEventListener('click',()=>{
-       const all=$$('[data-task-notify]');
-       if(btn.dataset.taskNotify==='NO_PUSH'){
-         all.forEach(x=>x.classList.remove('active')); btn.classList.add('active'); return;
-       }
-       all.forEach(x=>{if(x.dataset.taskNotify==='NO_PUSH') x.classList.remove('active');});
-       btn.classList.toggle('active');
-     }));
     $('#mobileMenu').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
     window.addEventListener('hashchange', routeFromHash);
 
@@ -4832,7 +4824,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
           kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态','已生成')+
         '</div>'+
       '</div>';
-    const notifyEvents=(typeof tasks!=='undefined'?((tasks.find(t=>t.id===b.taskId)||{}).notifyEvents||[]):[]);
     const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
     const CH={SLICE_ANOMALY:'Webhook',BATCH_FAILED:'企微告警群',BATCH_DONE:'Webhook',REPORT_RESULT:'Webhook'};
     const LOG={
@@ -4841,24 +4832,19 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       BATCH_DONE:[['14:05','200 OK · 198ms'],['14:18','200 OK · 211ms']],
       REPORT_RESULT:[['14:06','200 OK · 205ms'],['14:20','200 OK · 199ms']]
     };
-    const pickedEvents=notifyEvents.filter(k=>EV[k]);
-    const hasNotify=pickedEvents.length>0;
-    const waiting=preRunB;
-    const noteRows=pickedEvents.map(k=>{
-      const list=waiting?[LOG[k][0]]:LOG[k];
-      return list.map(([t,r])=>
-        '<div class="bd-note">'+
-          '<span class="bd-note-time">'+(waiting?'—':t)+'</span>'+
-          '<span class="bd-note-name">'+EV[k]+'</span>'+
-          '<span class="bd-note-detail">'+CH[k]+' · '+(waiting?'等待事件触发':r)+'</span>'+
-          '<span class="bd-note-state'+(waiting?' wait':'')+'">'+(waiting?'待触发':'已推送')+'</span>'+
-        '</div>').join('');
-    }).join('');
-    const noteCount=pickedEvents.reduce((n,k)=>n+(waiting?1:LOG[k].length),0);
-    const notifyBlock=hasNotify
+    const defaultEvents=Object.keys(EV);
+    const hasRecords=!preRunB;
+    const noteRows=hasRecords?defaultEvents.map(k=>LOG[k].map(([t,r])=>
+      '<div class="bd-note">'+
+        '<span class="bd-note-time">'+t+'</span>'+
+        '<span class="bd-note-name">'+EV[k]+'</span>'+
+        '<span class="bd-note-detail">'+CH[k]+' · '+r+'</span>'+
+        '<span class="bd-note-state">已推送</span>'+
+      '</div>').join('')).join(''):'';
+    const noteCount=hasRecords?defaultEvents.reduce((n,k)=>n+LOG[k].length,0):0;
+    const notifyBlock=hasRecords
       ? '<div class="bd-notify-list">'+noteRows+'</div>'
-      : '<div class="bd-notify-empty"><b>未配置告警通知</b><span>该 Task 未选择告警场景，本批次不会产生通知记录。</span></div>';
-
+      : '<div class="bd-notify-empty"><b>暂无告警通知记录</b><span>批次尚未启动，暂无通知产生。</span></div>';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-top">'+
           '<div class="bd-exec-progress">'+
@@ -4879,7 +4865,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
             '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
         '</div>'+
         '<div class="bd-notify-col">'+
-          '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasNotify?noteCount+' 条':'—')+'</span></div>'+
+          '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasRecords?noteCount+' 条':'0 条')+'</span></div>'+
           notifyBlock+
         '</div>'+
       '</div>';
@@ -5078,21 +5064,21 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   const TASK_VERSIONS = Array.from({length:30},(_,i)=>String(i+1));
   const TASK_NOTIFY_EVENTS = [
     ['SLICE_ANOMALY','切片异常'], ['BATCH_FAILED','跑批中断/失败'],
-    ['BATCH_DONE','跑批完成汇总'], ['REPORT_RESULT','报告生成结果'], ['NO_PUSH','不推送']
+    ['BATCH_DONE','跑批完成汇总'], ['REPORT_RESULT','报告生成结果']
   ];
   const EXTRA = [
-    {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
-    {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['BATCH_FAILED','BATCH_DONE'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
-    {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'手动生成',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['NO_PUSH'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
-    {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['BATCH_DONE','REPORT_RESULT'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
+    {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
+    {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
+    {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'手动生成',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
+    {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
   ];
   tasks.forEach((t,i)=>{ const e=EXTRA[i]||{}; Object.keys(e).forEach(k=>{ if(t[k]==null||t[k]==='') t[k]=e[k]; });
     if(t.strategyVersion==null) t.strategyVersion='1';
     if(!t.versionType) t.versionType='正式';
     if(!t.reportScene) t.reportScene='贷前';
     if(!t.reportGen) t.reportGen='自动生成';
-    if(!t.notifyEvents) t.notifyEvents=[];
-    const VALID=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT','NO_PUSH'];
+    t.notifyEvents=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
+    const VALID=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
     t.notifyEvents=t.notifyEvents.map(c=>({BATCH_RETRY:'BATCH_FAILED',REPORT_DONE:'REPORT_RESULT',REPORT_FAILED:'REPORT_RESULT'}[c]||c)).filter(c=>VALID.includes(c));
     if(!t.createdBy) t.createdBy='胡唐';
     if(!t.businessId) t.businessId=(t.opco||'').includes('Ghana')?'MTN_Ghana':((t.opco||'').includes('CDI')?'MTN_CDI':'MTN_Uganda');
@@ -5219,14 +5205,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
   /* ---------------- Task 详情 ---------------- */
   let detailTaskId=null, detailEditing=false;
   const TD_FIELDS=['#dtName','#dtBusinessId','#dtProduct','#dtDesc','#dtStrategy','#dtVersionType','#dtVersion','#dtReportScene','#dtReportGen'];
-  function renderDtNotifyEvents(t){
-    const box=document.getElementById('dtNotifyEvents'); if(!box) return;
-    const picked=(t&&t.notifyEvents)||[];
-    const list=detailEditing?TASK_NOTIFY_EVENTS:TASK_NOTIFY_EVENTS.filter(([k])=>picked.includes(k));
-    box.innerHTML=list.length
-      ? list.map(([k,label])=>`<button type="button" class="cohort-pill ${picked.includes(k)?'active':''}" data-dt-notify="${k}" ${detailEditing?'':'disabled'}>${label}</button>`).join('')
-      : '<span class="tiny muted">未选择通知事件</span>';
-  }
+  function renderDtNotifyEvents(){ /* 系统默认四类，静态提示，无需渲染 */ }
   function fillTaskDetail(t){
     const set=(s,v)=>{const el=document.querySelector(s);if(el)el.value=v==null?'':v;};
     set('#dtName',t.name); set('#dtId',t.id); set('#dtBusinessId',t.businessId||'MTN_Uganda'); set('#dtProduct',t.product); set('#dtDesc',t.description||'');
@@ -5264,8 +5243,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const t=tasks.find(x=>x.id===detailTaskId); if(!t||!detailEditing) return;
     const name=(document.getElementById('dtName')?.value||'').trim();
     if(!name){ toast('Task 名称不能为空','请填写 Task name 后再保存。'); document.getElementById('dtName')?.focus(); return; }
-    const pickedNotify=[...document.querySelectorAll('#dtNotifyEvents [data-dt-notify].active')];
-    if(!pickedNotify.length){ toast('请选择推送场景','至少选择一个场景，或选择「不推送」。'); return; }
     t.name=name;
     t.businessId=document.getElementById('dtBusinessId')?.value||t.businessId;
     const OPCO_MAP={MTN_Uganda:'MTN Uganda',MTN_Ghana:'MTN Ghana',MTN_CDI:'MTN CDI'};
@@ -5278,7 +5255,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     t.reportScene=document.getElementById('dtReportScene')?.value||t.reportScene;
     t.reportGen=(t.reportScene==='无报告')?'—':(document.getElementById('dtReportGen')?.value||t.reportGen);
     t.updatedAt=nowStamp();
-    t.notifyEvents=pickedNotify.map(el=>el.dataset.dtNotify);
+    t.notifyEvents=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
     fillTaskDetail(t); setTaskDetailEditable(false); renderTasks(document.getElementById('taskSearch')?.value||'');
     toast('Task 已更新',`${t.name} 的配置已保存并写回列表。`);
   }
@@ -5420,15 +5397,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
       if(e.target.closest('[data-close-task-detail]')){ closeTaskDetail(); return; }
       if(e.target.closest('[data-close-task-delete]')){ closeDeleteTask(); return; }
       if(e.target.closest('[data-close-run-task]')){ closeRunTaskModal(); return; }
-      const notify=e.target.closest('[data-dt-notify]');
-      if(notify&&detailEditing){
-        const box=document.getElementById('dtNotifyEvents'), all=box?[...box.querySelectorAll('[data-dt-notify]')]:[];
-        if(notify.dataset.dtNotify==='NO_PUSH'){
-          all.forEach(x=>x.classList.remove('active')); notify.classList.add('active'); return;
-        }
-        all.forEach(x=>{if(x.dataset.dtNotify==='NO_PUSH') x.classList.remove('active');});
-        notify.classList.toggle('active'); return;
-      }
       if(e.target.closest('#tdEditBtn')){ setTaskDetailEditable(true); return; }
       if(e.target.closest('#tdCancelBtn')){ cancelTaskDetailEdit(); return; }
       if(e.target.closest('#tdSaveBtn')){ saveTaskDetail(); return; }
