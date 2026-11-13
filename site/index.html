@@ -1653,6 +1653,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 .col-panel .col-foot>*{flex:0 0 auto;white-space:nowrap;}
 .col-panel .col-foot button{padding:0;}
 </style>
+<style id="batchReportTypeStyle">
+#view-batches .bl-table th[data-bcol="reportType"]{width:88px;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -2030,7 +2033,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
         <div class="bl-table">
           <table>
-            <thead><tr><th data-bcol="name">Batch Name</th><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="taskId">Task ID</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
+            <thead><tr><th data-bcol="name">Batch Name</th><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="reportType">报告类型</th><th data-bcol="taskId">Task ID</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
@@ -3625,7 +3628,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(q) filtered = filtered.filter(b=>{
          const rowT=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
          const dn=String(b.batchName||((rowT.name||''))).toLowerCase();
-         const hay=[b.id,b.groupId,b.taskId||'',dn,rowT.name||'',b.businessDate||'',b.expectedSliceDate||'',b.batchName||''].map(x=>String(x||'').toLowerCase()).join(' ');
+         const hay=[b.id,b.groupId,b.taskId||'',dn,rowT.name||'',rowT.reportScene||'',b.businessDate||'',b.expectedSliceDate||'',b.batchName||''].map(x=>String(x||'').toLowerCase()).join(' ');
          return hay.includes(q);
        });
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
@@ -3698,6 +3701,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
           <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
           <td data-bcol="task"><div class="bl-task">${taskName}</div></td>
+<td data-bcol="reportType"><div class="bl-mono">${(rowTask&&rowTask.reportScene)||'—'}</div></td>
           <td data-bcol="taskId"><div class="bl-mono">${b.taskId||'—'}</div></td>
           <td data-bcol="users"><div class="bl-mono">${userCount?fmtCount(userCount):'—'}</div></td>
           <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
@@ -5125,7 +5129,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
 
   /* Batch 列表列设置 */
-  const BCOL_DEFS=[['name','Batch Name'],['task','Task Name'],['taskId','Task ID'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
+  const BCOL_DEFS=[['name','Batch Name'],['task','Task Name'],['reportType','报告类型'],['taskId','Task ID'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
   const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
   const BCOL_DEFAULT_OFF=['taskId','success','gen','started','ended','duration','slice'];
     BCOL_DEFAULT_OFF.forEach(k=>bcolState[k]=false);
