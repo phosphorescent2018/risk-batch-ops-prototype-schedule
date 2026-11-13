@@ -1439,7 +1439,10 @@
 .bd-log .m{color:#33415C;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .bd-log .r{color:#0E9F6E;font-size:10.5px;white-space:nowrap;}
 </style>
-<style id="bdStatusStyle">.bd-title-row{display:flex;align-items:center;gap:12px;}
+<style id="bdStatusStyle">.bd-title-row{display:flex;align-items:center;gap:12px;min-width:0;}
+.bd-id{font-size:12px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:#96A2B4;letter-spacing:.2px;margin-bottom:5px;user-select:text;}
+.bd-title{font-size:22px;font-weight:700;color:#0F172A;line-height:1.2;max-width:640px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(max-width:900px){.bd-title{max-width:min(60vw,420px);}}
 .bd-status{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;font-size:11px;font-weight:600;border:1px solid transparent;}
 .bd-status::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;}
 .bd-status.gray{background:#F3F6FA;color:#5A6A80;border-color:#E6EBF2;}
@@ -1566,30 +1569,46 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-notify-static-sm{padding:9px 11px;}
 </style>
 <style id="listPagerStyle">
-.list-pager{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:10px 14px;border-top:1px solid #EDF0F5;font-size:11px;color:#8794A6;}
-.lp-total{margin-right:6px;white-space:nowrap;}
-.lp-size,.lp-input{height:26px;border:1px solid #E4E9F0;border-radius:6px;background:#fff;color:#33415C;font-size:11px;font-family:inherit;}
-.lp-size{padding:0 6px;min-width:66px;cursor:pointer;}
-.lp-input{width:46px;text-align:center;padding:0 4px;}
-.lp-jump{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
-.lp-btn{width:26px;height:26px;padding:0;border-radius:6px;border:1px solid #E4E9F0;background:#fff;color:#5A6A80;font-size:15px;line-height:1;cursor:pointer;font-family:inherit;}
-.lp-btn:hover:not(:disabled){background:#F7F9FC;border-color:#D8E0EA;color:#2458C5;}
-.lp-btn:disabled{opacity:.4;cursor:not-allowed;}
+.list-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:10px 14px;border-top:1px solid #EDF0F5;font-size:14px;color:#5A6A80;white-space:nowrap;flex-wrap:nowrap;}
+.lp-total{margin-right:6px;color:#5A6A80;white-space:nowrap;}
+.lp-arrow{width:32px;height:32px;padding:0;border:0;background:transparent;color:#5A6A80;font-size:18px;line-height:1;cursor:pointer;font-family:inherit;border-radius:6px;flex:0 0 auto;}
+.lp-arrow:hover:not(:disabled){background:#F2F6FF;color:#2458C5;}
+.lp-arrow:disabled{opacity:.35;cursor:not-allowed;}
+.lp-num{width:32px;height:32px;padding:0;border:0;background:transparent;border-radius:6px;color:#33415C;font-size:14px;font-family:inherit;cursor:pointer;flex:0 0 auto;}
+.lp-num:hover:not(.active){background:#F2F6FF;color:#2458C5;}
+.lp-num.active{background:#E8F0FF;color:#2458C5;font-weight:600;}
+.lp-ellipsis{display:inline-flex;align-items:center;justify-content:center;width:20px;height:32px;color:#96A2B4;font-size:14px;user-select:none;flex:0 0 auto;}
+.lp-size,.lp-input{height:36px;border:1px solid #E4E9F0;border-radius:8px;background:#fff;color:#33415C;font-size:13px;font-family:inherit;box-sizing:border-box;}
+.lp-size{padding:0 8px;min-width:92px;cursor:pointer;flex:0 0 auto;}
+.lp-input{width:52px;text-align:center;padding:0 4px;flex:0 0 auto;}
+.lp-goto{display:inline-flex;align-items:center;gap:6px;margin-left:2px;color:#5A6A80;font-size:14px;white-space:nowrap;flex:0 0 auto;}
+.lp-size:focus,.lp-input:focus{outline:none;border-color:#2F6BFF;box-shadow:0 0 0 3px rgba(47,107,255,.10);}
 </style>
 <script>
 window.__listPage={task:1,batch:1};
 window.__listPageSize={task:5,batch:5};
 window.listPagerHtml=function(target,total,pg,pages,per){
   per=per||5;
-  return '<span class="lp-total">共 '+total+' 条</span>'
-    +'<select class="lp-size" data-list-size="'+target+'" aria-label="Rows per page">'
-    + [5,10,20].map(function(n){return '<option value="'+n+'"'+(n===per?' selected':'')+'>'+n+' 条/页</option>';}).join('')
-    +'</select>'
-    +'<button type="button" class="lp-btn" data-list-page="first" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+' aria-label="First page" title="First page">«</button>'
-    +'<button type="button" class="lp-btn" data-list-page="prev" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+' aria-label="Previous page" title="Previous page">‹</button>'
-    +'<span class="lp-jump">第 <input class="lp-input" type="number" min="1" max="'+pages+'" value="'+pg+'" data-list-jump="'+target+'" aria-label="Page number"> / '+pages+' 页</span>'
-    +'<button type="button" class="lp-btn" data-list-page="next" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+' aria-label="Next page" title="Next page">›</button>'
-    +'<button type="button" class="lp-btn" data-list-page="last" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+' aria-label="Last page" title="Last page">»</button>';
+  pages=Math.max(1,Number(pages)||1);
+  pg=Math.min(Math.max(1,Number(pg)||1),pages);
+  function seq(){
+    if(pages<=7){var a=[];for(var i=1;i<=pages;i++)a.push(i);return a;}
+    if(pg<=4)return [1,2,3,4,5,'…',pages];
+    if(pg>=pages-3)return [1,'…',pages-4,pages-3,pages-2,pages-1,pages];
+    return [1,'…',pg-1,pg,pg+1,'…',pages];
+  }
+  var h='<span class="lp-total">A total of '+total+'</span>';
+  h+='<button type="button" class="lp-arrow" data-list-page="prev" data-list-target="'+target+'" '+(pg<=1?'disabled':'')+' aria-label="Previous page" title="Previous page">‹</button>';
+  h+=seq().map(function(n){
+    if(n==='…')return '<span class="lp-ellipsis" aria-hidden="true">…</span>';
+    return '<button type="button" class="lp-num'+(n===pg?' active':'')+'" data-list-page-num="'+n+'" data-list-target="'+target+'" '+(n===pg?'aria-current="page"':'')+' aria-label="Page '+n+'">'+n+'</button>';
+  }).join('');
+  h+='<button type="button" class="lp-arrow" data-list-page="next" data-list-target="'+target+'" '+(pg>=pages?'disabled':'')+' aria-label="Next page" title="Next page">›</button>';
+  h+='<select class="lp-size" data-list-size="'+target+'" aria-label="Rows per page">'
+    +[5,10,20].map(function(n){return '<option value="'+n+'"'+(n===per?' selected':'')+'>'+n+' / page</option>';}).join('')
+    +'</select>';
+  h+='<span class="lp-goto">Go to <input class="lp-input" type="text" inputmode="numeric" value="'+pg+'" data-list-pages="'+pages+'" data-list-jump="'+target+'" aria-label="Go to page"> Page</span>';
+  return h;
 };
 </script>
 
@@ -1610,6 +1629,29 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 #view-batches .bl-table th[data-bcol="verify"]{width:11%;}
 #view-batches .bl-table th[data-bcol="run"]{width:10%;}
 #view-batches .bl-table th[data-bcol="actions"]{width:15%;}
+</style>
+<style id="bdLiveFix">
+.bd-exec-metrics .bd-metric-live .bd-metric-line{flex-wrap:nowrap;white-space:nowrap;gap:7px;}
+.bd-exec-metrics .bd-metric-live b{flex:0 0 auto;}
+.bd-exec-metrics .bd-metric-live i{flex:0 0 auto;white-space:nowrap;font-size:12px;line-height:1.2;}
+</style>
+<style id="bdLowerFix">
+.bd-lower .bd-report-col{padding-right:26px;}
+</style>
+<style id="batchTaskIdStyle">
+#view-batches .bl-table th[data-bcol="taskId"]{width:100px;}
+</style>
+<style id="batchHeaderCaseStyle">
+#view-batches .bl-table th{text-transform:none;letter-spacing:normal;}
+</style>
+<style id="batchNoBoldStyle">
+#view-batches .bl-table th{text-transform:none;letter-spacing:normal;font-weight:400;}
+#view-batches .bl-table .bl-id{font-weight:400;}
+</style>
+<style id="colFootFix">
+.col-panel .col-foot{justify-content:flex-end;gap:12px;flex-wrap:nowrap;white-space:nowrap;}
+.col-panel .col-foot>*{flex:0 0 auto;white-space:nowrap;}
+.col-panel .col-foot button{padding:0;}
 </style>
 </head>
 <body>
@@ -1983,12 +2025,12 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             <option value="已终止">已终止</option>
           </select>
           <div class="col-picker"><button class="btn btn-sm" id="batchColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button><div class="col-panel hidden" id="batchColPanel"></div></div>
-          <span class="bl-count" id="batchCount">共 0 条</span>
+          <span class="bl-count" id="batchCount"></span>
         </div>
 
         <div class="bl-table">
           <table>
-            <thead><tr><th data-bcol="id">批次号</th><th data-bcol="name">Batch Name</th><th data-bcol="task">Task Name</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
+            <thead><tr><th data-bcol="name">Batch Name</th><th data-bcol="id">批次号</th><th data-bcol="task">Task Name</th><th data-bcol="taskId">Task ID</th><th data-bcol="users">批次人数</th><th data-bcol="success">成功人数</th><th data-bcol="rate">成功率</th><th data-bcol="verify">核验状态</th><th data-bcol="run">进行状态</th><th data-bcol="gen">生成时间</th><th data-bcol="started">执行开始时间</th><th data-bcol="ended">执行结束时间</th><th data-bcol="duration">总耗时</th><th data-bcol="slice">切片日期</th><th data-bcol="actions">操作</th></tr></thead>
             <tbody id="batchTableBody"></tbody>
           </table>
         </div>
@@ -2589,6 +2631,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
     const batchTaskMap={B20260627001:'TRF_101',B20260626001:'TRF_102',B20260623001:'TRF_201',B20260622001:'TRF_301',B20260625001:'TRF_102',B20260624001:'TRF_101',B20260524001:'TRF_102',B20260424001:'TRF_102',B20260331001:'TRF_301',B20260324001:'TRF_301'};
     batches.forEach(b=>{ if(!b.taskId) b.taskId=batchTaskMap[b.id]||'TRF_101'; });
+    batches.forEach(b=>{ if(!b.groupId){ const t=(typeof tasks!=='undefined'?tasks.find(x=>x.id===b.taskId):null); const ds=t&&t.dataScope?String(t.dataScope).split(' · ')[0]:''; b.groupId=ds||'limitIncreaseGroupV1'; } });
 
     const runGroupProfiles = {
       limitIncreaseGroupV1:{name:'limitIncreaseGroupV1',description:'近 30 天活跃、额度使用率与风险状态满足升额前置条件。',count:589272,matched:572481,runnable:568902,version:'v1.3',updated:'10-28 23:40'},
@@ -2698,6 +2741,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       B20260624001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
       B20260524001: { interventionApplied:true, packageValidated:true, reportGenerated:true, published:true, pushStatus:'success' },
       B20260424001: { interventionApplied:true, packageValidated:true, reportGenerated:true, published:true, pushStatus:'partial' },
+      B20260331001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
       B20260324001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'blocked' }
     };
 
@@ -2901,15 +2945,16 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if (!manifestStates[id]) {
         const b = batches.find(x => x.id === id);
         const completed = b && (b.run === '已完成' || b.run === '部分失败');
+        const isNew = !!(b && b.isNew);
         const failedCheck = id === 'B20260622001';
         manifestStates[id] = {
           version:'v2',
-          status: failedCheck ? 'FAILED' : (completed ? 'CLOSED' : 'FROZEN'),
+          status: failedCheck ? 'FAILED' : (isNew ? 'WAITING_CHECK' : (completed ? 'CLOSED' : 'FROZEN')),
           gate:completed ? 'STARTED' : 'SCHEDULED',
           scheduledAt:b?.requestedAt || '--',
           sla:'06:00',
           expectedSliceDate:b?.expectedSliceDate||'',
-          checks:cloneManifestChecks(),
+          checks:isNew?cloneManifestChecks().map(c=>({...c,result:'PENDING'})):cloneManifestChecks(),
           logs:[
             {time:'21:55', title:'自动校验完成', detail:'10 项检查全部通过'},
             {time:'21:52', title:'OA 审批同步', detail:'业务负责人、风险负责人审批通过'},
@@ -3200,8 +3245,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(eventReportBtn){
         const finished=b && ['已完成','部分失败','已停止','已终止'].includes(b.run);
         const generated=batchStates[b?.id]?.eventReportGenerated;
-        eventReportBtn.disabled=!finished;
-        eventReportBtn.style.display='';
+        const noRepNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b?.taskId)||{}).reportScene==='无报告':false);
+        eventReportBtn.disabled=!finished||noRepNow;
+        eventReportBtn.style.display=noRepNow?'none':'';
         eventReportBtn.innerHTML=finished&&generated?`${icon('file','icon icon-sm')}查看报告`:`${icon('file','icon icon-sm')}生成报告`;
         eventReportBtn.title=!finished?'跑批完成后可生成事件报告':generated?'打开整批跑批事件报告':'生成整批跑批事件报告';
       }
@@ -3573,13 +3619,15 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     }
 
     function renderBatches() {
-      const q=(state.batchQuery||'').toLowerCase();
+      const q=(state.batchQuery||'').trim().toLowerCase();
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
       if(q) filtered = filtered.filter(b=>{
-        const dn=String(b.batchName||(((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')+' · '+(b.businessDate||b.expectedSliceDate||''))).toLowerCase();
-        return String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q)||dn.includes(q);
-      });
+         const rowT=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
+         const dn=String(b.batchName||((rowT.name||''))).toLowerCase();
+         const hay=[b.id,b.groupId,b.taskId||'',dn,rowT.name||'',b.businessDate||'',b.expectedSliceDate||'',b.batchName||''].map(x=>String(x||'').toLowerCase()).join(' ');
+         return hay.includes(q);
+       });
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
@@ -3589,11 +3637,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const pager=document.getElementById('batchPager');
       if(pager) pager.innerHTML=window.listPagerHtml?window.listPagerHtml('batch',total,pg,pages,per):'';
       const count = $('#batchCount');
-      if (count) count.textContent = `共 ${total} 条`;
+      if (count) count.textContent = `A total of ${total}`;
       const totalStat = $('#batchTotalStat'); if (totalStat) totalStat.textContent = total;
-      if(!filtered.length){ $('#batchTableBody').innerHTML = '<tr><td colspan="6"><div class="bl-empty">没有匹配的批次</div></td></tr>'; renderShardManagement(); return; }
+      if(!filtered.length){ const colN=document.querySelectorAll('#view-batches .bl-table thead th').length||8; $('#batchTableBody').innerHTML = '<tr><td colspan="'+colN+'"><div class="bl-empty">没有匹配的批次</div></td></tr>'; renderShardManagement(); return; }
       $('#batchTableBody').innerHTML = filtered.map(b => {
-        const bs = batchStates[b.id] || batchStates.B20260624001;
+        const bs = batchStates[b.id] || {interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'};
         const manifest = getManifest(b.id);
         const verifyFailed = manifest.status==='FAILED';
         const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'};
@@ -3610,7 +3658,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const manifestIssue = (mc.BLOCK||0) + (mc.WARN||0) + (mc.PENDING||0);
         const sopFlag=b.sopProfileId==='late'?' · 晚申请':b.sopProfileId==='adhoc'?' · 临时跑批':'';
         const manifestSummary = ((mc.BLOCK||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.BLOCK} 阻断` : (mc.WARN||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.WARN} 风险` : (mc.PENDING||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.PENDING} 待核验` : `${manifest.checks.length}/${manifest.checks.length} 通过`)+sopFlag;
-        const finished=['已完成','部分失败'].includes(b.run);
+        const finished=['已完成','部分失败','已停止','已终止'].includes(b.run);
         const ic=(iconId,title,attrs,disabled)=>`<button class="bl-ic" ${attrs||''} ${disabled?'disabled':''} title="${title}" aria-label="${title}"><svg class="icon icon-sm"><use href="#${iconId}"/></svg></button>`;
         const empty='';
         const actDetail=ic('i-eye','查看详情',`data-detail-modal="${b.id}"`);
@@ -3626,15 +3674,15 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           if(finished && bs.reportGenerated) actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
         }
         const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
-        const STARTED_STATES=['运行中','已完成','部分失败','已停止'];
+        const hasRunList=(Number(b.progress)||0)>0 || !!b.startedAt;
         const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
         const successCount = runLabel==='成功' ? userCount
           : runLabel==='失败' ? Math.round(userCount*0.96)
-          : (runLabel==='运行中') ? Math.round(userCount*(Number(b.progress)||0)/100)
+          : ((runLabel==='运行中'||(runLabel==='已终止'&&hasRunList)) && (Number(b.progress)||0)>0) ? Math.round(userCount*(Number(b.progress)||0)/100)
           : null;
         const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
-        const execStart=b.startedAt || (STARTED_STATES.includes(b.run) ? b.requestedAt : '—');
-        const execEnd=b.endedAt || '—';
+        const execStart=hasRunList ? (b.startedAt || b.requestedAt || '—') : '—';
+        const execEnd=hasRunList ? (b.endedAt || '—') : '—';
         const durText=(execStart!=='—'&&execEnd!=='—')?(()=>{const a=new Date(execStart.replace(' ','T')),z=new Date(execEnd.replace(' ','T'));if(isNaN(a)||isNaN(z))return '—';const m=Math.max(0,Math.round((z-a)/60000));const h=Math.floor(m/60);return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min'));})():'—';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
         const verifyLabel = manifest.status==='FAILED' ? '核验失败'
@@ -3646,10 +3694,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           : verifyLabel==='核验不通过' ? 'red'
           : verifyLabel==='核验中' ? 'blue'
           : verifyLabel==='待核验' ? 'gray' : 'green';
-        return `<tr data-row-batch="${b.id}">
+        return `<tr data-row-batch="${b.id}">          <td data-bcol="name"><div class="bl-task">${b.batchName||taskName}</div></td>
+
           <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
-          <td data-bcol="name"><div class="bl-task">${b.batchName||(taskName+' · '+(b.businessDate||b.expectedSliceDate||''))}</div></td>
           <td data-bcol="task"><div class="bl-task">${taskName}</div></td>
+          <td data-bcol="taskId"><div class="bl-mono">${b.taskId||'—'}</div></td>
           <td data-bcol="users"><div class="bl-mono">${userCount?fmtCount(userCount):'—'}</div></td>
           <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
           <td data-bcol="rate"><div class="bl-rate">${rateText}</div></td>
@@ -3852,7 +3901,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
     function routeFromHash() {
       const hash = location.hash.replace(/^#\/?/, '');
-      if (['monitor','alerts','health-calendar','run-sop','reports-center','types'].includes(hash)) { navigate('batchList', null, true); return; }
       if (hash.startsWith('batch/')) {
         const [, id, page, phase] = hash.split('/');
         state.currentBatchId = id || 'B20260624001';
@@ -3860,7 +3908,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         else { manifestPhase = phase || (page === 'shard' ? 'run' : 'pre'); navigate('batch', page || '', true); }
       } else if (hash.startsWith('task/')) {
         navigate('task', null, true);
-      } else if (hash === 'alerts') navigate('monitor');
+      } else if (hash === 'alerts') navigate('alerts', null, true);
       else if (hash === 'monitor') navigate('monitor', null, true);
       else if (hash === 'health-calendar') navigate('healthCalendar', null, true);
       else if (hash === 'run-sop') navigate('runSop', null, true);
@@ -4350,9 +4398,16 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       toast(cancelled?'Batch 已取消':'Batch 已删除',cancelled?`${id} 的启动指令已撤销，审计记录已保留。`:`${id} 及其 Manifest 检查记录已删除。`);
     }
 
+    function resetTaskForm(){
+      if($('#taskNameInput')) $('#taskNameInput').value='';
+      if($('#taskDesc')) $('#taskDesc').value='';
+      if($('#taskReportScene')) $('#taskReportScene').value='贷前';
+      if($('#taskReportGen')) $('#taskReportGen').value='自动生成';
+      if($('#taskVersionType')) $('#taskVersionType').value='正式';
+    }
     function openTaskDrawer() {
       const t=tasks.find(x=>x.id===state.currentTaskId)||tasks[0];
-      
+      resetTaskForm();
       $('#taskDrawerBackdrop').classList.remove('hidden');
       document.body.style.overflow = 'hidden';
       state.wizardStep=3;
@@ -4441,7 +4496,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const eventReportBtn = $('#eventReportActionBtn');
       if (eventReportBtn) {
         const finished=['已完成','部分失败','已停止','已终止'].includes(b.run);
-        eventReportBtn.disabled = !finished;
+        const noRepNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).reportScene==='无报告':false);
+        eventReportBtn.disabled = !finished||noRepNow;
+        eventReportBtn.style.display=noRepNow?'none':'';
         eventReportBtn.innerHTML = `${icon('file','icon icon-sm')}${!finished?'生成报告':bs.eventReportGenerated?'查看报告':'生成报告'}`;
         eventReportBtn.title = !finished?'跑批完成后可生成事件报告':bs.eventReportGenerated?'打开整批跑批事件报告':'生成整批跑批事件报告';
       }
@@ -4499,26 +4556,23 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const id = batchId || state.currentBatchId;
       const bs = batchStates[id] || batchStates.B20260624001;
       if (bs.reportGenerated) {
-        const link = document.createElement('a');
-        link.href = `./report.html?batch=${encodeURIComponent(id)}`;
-        link.target = '_blank';
-        link.rel = 'noopener';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        toast('查看报告',`${id} 的 Report 已生成；演示原型暂不跳转独立报告页。`);
         return;
       }
+      toast('正在生成报告',`${id} 的 Report 正在生成，请稍候。`);
       setTimeout(() => {
         bs.reportGenerated = true;
         renderBatches();
         if (batchId === state.currentBatchId) applyBatchView(state.currentBatchId);
-        toast('Report 已生成', `${id} 的 Report 已就绪。再次点击“查看 Report”即可在新标签页打开。`);
+        toast('Report 已生成', `${id} 的 Report 已就绪。再次点击“查看报告”即可查看。`);
       }, 900);
     }
     function handleEventReportAction(batchId) {
       const id=batchId||state.currentBatchId; const b=batches.find(x=>x.id===id); const bs=batchStates[id];
       if(!b||!bs) return;
       if(!['已完成','部分失败','已停止','已终止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
+      const rt=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
+      if(rt.reportScene==='无报告') return toast('无报告','该 Task 报告场景为无报告，不生成事件报告。');
       const btn=$('#eventReportActionBtn');
       const reportUrl=`./event-report.html?batch=${encodeURIComponent(id)}`;
       const openReportPage=()=>{
@@ -4675,9 +4729,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       else {
         const name=($('#taskNameInput')?.value||'').trim();
         if(!name){ toast('请填写 Task 名称','Task name 为必填项。'); $('#taskNameInput')?.focus(); return; }
+        if(tasks.some(x=>x.name===name)){ toast('Task 名称已存在','请使用不重复的 Task name。'); $('#taskNameInput')?.focus(); return; }
         const execution=$('#taskExecutionMode .active')?.dataset.taskExecution||'immediate';
         tasks.unshift({
-          id:'TRF_'+String(400+tasks.length), switchOn:true, name,
+          id:'TRF_'+String(Math.max(400,...tasks.map(x=>parseInt(String(x.id).replace(/[^0-9]/g,''),10)||0))+1), switchOn:true, name,
           opco:'MTN Uganda', businessId:$('#taskBusinessId')?.value||'MTN_Uganda', product:$('#taskProduct')?.value||'MoMoAdvance',
           type:'风控调额', dataScope:$('#runGroupSelect')?.value||'limitIncreaseGroupV1',
           strategy:$('#taskStrategySelect')?.value||'UG-OD-Monthly', version:'v1.0',
@@ -4690,7 +4745,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           scheduleMode:execution==='scheduled'?'预约':'立即', scheduleAt:execution==='scheduled'?($('#taskScheduleAt')?.value||'').replace('T',' '):'创建后发起',
           targetSystems:'LMS + DigiOps', autoCheck:true, autoRun:true
         });
-        renderTasks();
+        if(window.__listPage) window.__listPage.task=1;
+        renderTasks($('#taskSearch')?.value||'');
+        resetTaskForm();
         closeTaskDrawer();
         toast('Task 已创建',`${name} 已保存到 Task 列表，可通过「发起跑批」创建 Batch。`);
       }
@@ -4790,7 +4847,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   <div class="bd-panel">
     <div class="bd-head">
       <div>
-        <div class="bd-title-row"><div class="bd-title" id="bdTitle">—</div><span class="bd-status" id="bdStatus"></span></div>
+        <div class="bd-id" id="bdId"></div>
+         <div class="bd-title-row"><div class="bd-title" id="bdTitle" title="">—</div><span class="bd-status" id="bdStatus"></span></div>
         <div class="bd-meta" id="bdMeta"></div>
       </div>
       <div class="bd-actions">
@@ -4855,35 +4913,46 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const fin=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
+    const hasRun=(Number(b.progress)||0)>0 || !!b.execStart || !!b.startedAt;
+    const showResults=fin && hasRun;
+    const preRunView=preRunB || (fin && !hasRun);
     const abnormal=fin && !demoFinished && !['已完成','成功'].includes(b.run);
     const durationMin=Math.max(12,Math.round(people/900));
-    const avgSpeed=fmtCount(Math.round(900+Math.random()*500));
+    let seed=0; for(const ch of (b.id||'')) seed=(seed*31+ch.charCodeAt(0))%9973;
+    const avgSpeed=fmtCount(Math.round(900+(seed%500)));
     const pctTxt=p.toFixed(1)+'%';
+    const rowTaskNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
+    const noReportNow=rowTaskNow.reportScene==='无报告';
+    const bsNow=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
+    const reportState=noReportNow?'无报告':((bsNow.reportGenerated||b.reportGenerated||bsNow.eventReportGenerated)?'已生成':'未生成');
+    const startTs=b.startedAt||b.requestedAt||'';
+    const endTs=b.endedAt||'';
+    const durText2=(()=>{ if(!startTs||!endTs)return '—'; const a=new Date(startTs.replace(' ','T')),z=new Date(endTs.replace(' ','T')); if(isNaN(a)||isNaN(z)||z<a)return '—'; const m=Math.round((z-a)/60000),h=Math.floor(m/60); return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min')); })();
     const pctLabel=stateLabelOf(b);
     const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
     const startD=new Date(); startD.setHours(6,0,0,0);
     const endD=new Date(startD.getTime()+durationMin*60000);
     const failShards=['部分失败','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
-    const okShards=Math.max(0,shards-failShards);
+    const okShards=Math.max(0,Math.round(shards*Math.min(100,p)/100)-failShards);
     const resultTxt=stateLabelOf(b);
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
-    const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
+    const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
     const live='<div class="bd-metric bd-metric-live"><span>处理速度</span><div class="bd-metric-line"><b id="bdSpeedVal">'+avgSpeed+'</b><i>万人 / 小时</i></div></div>';
     const waitBlock='<div class="bd-wait"><b>等待启动</b></div>';
-    const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
-    const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
+    const right=preRunView?waitBlock:'<div class="bd-exec-metrics'+(showResults?'':' solo')+'">'+(showResults?summary:live)+'</div>';
+    const kicker=preRunView?'等待启动':(showResults?'执行总结':'执行进度');
     const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
     const stateBar='';
     const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
-    const keyInfo = !fin ? '' :
+    const keyInfo = !showResults ? '' :
       '<div class="bd-sec bd-keyinfo">'+
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
         '<div class="bd-kv-grid">'+
           kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
-          kv('跑批创建时间',b.businessDate||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
-          kv('开始时间',(b.businessDate||'—')+' '+hm(startD))+kv('结束时间',(b.businessDate||'—')+' '+hm(endD))+kv('总耗时',durationMin+' 分钟')+
-          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+kv('报告状态','已生成')+
+          kv('跑批创建时间',startTs||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
+          kv('开始时间',startTs||'—')+kv('结束时间',endTs||'—')+kv('总耗时',durText2)+
+          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+(noReportNow?'':kv('报告状态',reportState))+
         '</div>'+
       '</div>';
     const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
@@ -4894,31 +4963,38 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       BATCH_DONE:[['14:05','200 OK · 198ms'],['14:18','200 OK · 211ms']],
       REPORT_RESULT:[['14:06','200 OK · 205ms'],['14:20','200 OK · 199ms']]
     };
-    const defaultEvents=Object.keys(EV);
-    const hasRecords=!preRunB;
+    const okLabel=stateLabelOf(b);
+    let evKeys=(okLabel==='成功')?['SLICE_ANOMALY','BATCH_DONE','REPORT_RESULT']
+      :(okLabel==='失败'||okLabel==='已终止')?['SLICE_ANOMALY','BATCH_FAILED']
+      :['SLICE_ANOMALY','BATCH_FAILED'];
+    if(noReportNow) evKeys=evKeys.filter(k=>k!=='REPORT_RESULT');
+    const hasRecords=showResults && evKeys.length>0;
     const noteDate=b.businessDate||'';
-    const noteRows=hasRecords?defaultEvents.map(k=>LOG[k].map(([t,r])=>
-      '<div class="bd-note">'+
-        '<span class="bd-note-time">'+noteDate+' '+t+'</span>'+
-        '<span class="bd-note-name">'+EV[k]+'</span>'+
-        '<span class="bd-note-state">已推送</span>'+
-      '</div>').join('')).join(''):'';
-    const noteCount=hasRecords?defaultEvents.reduce((n,k)=>n+LOG[k].length,0):0;
+    const noteItems=[];
+    if(hasRecords) evKeys.forEach(k=>LOG[k].forEach(([t,r])=>noteItems.push({t:t,k:k})));
+    noteItems.sort((x,y)=>x.t.localeCompare(y.t));
+    const noteRows=hasRecords?noteItems.map(n=>
+       '<div class="bd-note">'+
+         '<span class="bd-note-time">'+noteDate+' '+n.t+'</span>'+
+         '<span class="bd-note-name">'+EV[n.k]+'</span>'+
+         '<span class="bd-note-state">已推送</span>'+
+       '</div>').join(''):'';
+    const noteCount=hasRecords?noteItems.length:0;
     const notifyBlock=hasRecords
       ? '<div class="bd-notify-list">'+noteRows+'</div>'
-      : '<div class="bd-notify-empty"><b>暂无告警通知记录</b><span>批次尚未启动，暂无通知产生。</span></div>';
+      : '<div class="bd-notify-empty"><b>暂无告警通知记录</b><span>'+(preRunView?'批次尚未启动，暂无通知产生。':'本次跑批未实际执行，暂无通知产生。')+'</span></div>';
     const runningNow=b.run==='运行中' && !fin;
     const phReport='<div class="bd-report-head"><b>批次事件报告</b><span>PDF</span></div><div class="bd-notify-empty"><b>跑批完成后生成</b><span>终态后自动生成事件报告</span></div>';
     const phNotify='<div class="bd-report-head"><b>告警通知记录</b><span>—</span></div><div class="bd-notify-empty"><b>暂无告警通知记录</b><span>记录将在跑批过程中产生</span></div>';
-    const lowerBlock=runningNow
-      ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+phReport+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
-      : '<div class="bd-sec bd-lower">'+
-        '<div class="bd-report-col">'+
-          '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
+    const noReportCard='<div class="bd-report-head"><b>批次事件报告</b><span>—</span></div><div class="bd-notify-empty"><b>该 Task 未配置报告</b><span>报告场景为无报告，不生成事件报告</span></div>';
+    const pdfCard='<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
           '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
-            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(fin?(b.businessDate||'')+' '+hm(endD):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+(fin?'已生成':'未生成')+'</b></div>'+
-            '<div class="bd-btns"><button class="bd-btn primary" '+(fin?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(fin?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>'+
-        '</div>'+
+            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(reportState==='已生成'?(b.endedAt||b.requestedAt||'—'):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+reportState+'</b></div>'+
+            '<div class="bd-btns"><button class="bd-btn primary" '+(reportState==='已生成'?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(reportState==='已生成'?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>';
+    const lowerBlock=runningNow
+      ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+(noReportNow?noReportCard:phReport)+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
+      : '<div class="bd-sec bd-lower">'+
+        '<div class="bd-report-col">'+(noReportNow?noReportCard:(preRunView? '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+ '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+'<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>—</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">未生成</b></div>'+'<div class="bd-btns"><button class="bd-btn primary" disabled data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" disabled data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>' : pdfCard))+'</div>'+
         '<div class="bd-notify-col">'+
           '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasRecords?noteCount+' 条':'0 条')+'</span></div>'+
           notifyBlock+
@@ -4939,9 +5015,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       lowerBlock;
   }
   function reportPanel(b){
-    const done=['已完成','部分失败'].includes(b.run);
     const running=b.run==='运行中';
-    const st=[(running?'生成中':(done?'已生成':'待生成')),'未勾选',(done?'生成中':'待生成'),(done?'待生成':'未勾选'),'未勾选'];
+    const bsR=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
+    const gen=!!(bsR.reportGenerated||b.reportGenerated||bsR.eventReportGenerated);
+    const st=[(gen?'已生成':(running?'生成中':'待生成')),'未勾选',(gen?'已生成':(running?'生成中':'待生成')),'未勾选','未勾选'];
     const cls={'已生成':'green','生成中':'blue','待生成':'gray','未勾选':'off'};
     const rows=REPORT_DEFS.map((r,i)=>{
       const stt=st[i];
@@ -4968,11 +5045,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const speed=Math.round(180+(people%37));
     const totalMin=Math.round(people/(speed*10000/60));
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge('运行中','blue');}
-    let t0=performance.now();
+    let t0=performance.now()-(pctOf(b)/100)*DEMO_MS;
     let speedNow=1150, speedTarget=1150, lastTargetAt=0, lastPaintAt=0;
     function frame(now){
       const k=Math.min(1,(now-t0)/DEMO_MS);
-      const p=100*(k<1?k:1);
+      const p=99.9*(k<1?k:1);
       demoP=p;
       const done=Math.max(0,Math.min(shards-failN,Math.round(shards*p/100)));
       const ringEl=el('bdRing'); if(ringEl) ringEl.setAttribute('stroke-dashoffset', (C*(1-p/100)).toFixed(2));
@@ -5002,23 +5079,23 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function render(id, opts){
     const b=batches.find(x=>x.id===id); if(!b) return;
     curId=id;
-    el('bdTitle').textContent=b.id;
+    const dispName=b.batchName||((((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')).trim());
+    const tt=el('bdTitle'); if(tt){ tt.textContent=dispName; tt.setAttribute('title',dispName); }
+    const idEl=el('bdId'); if(idEl){ idEl.textContent=b.id; idEl.setAttribute('title',b.id); }
     {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
-    el('bdMeta').innerHTML='<span>Batch Name '+(b.batchName||(((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')+' · '+(b.businessDate||b.expectedSliceDate||'')))+'</span><i>·</i><span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+(b.people||'—')+' 人</span>';
+    el('bdMeta').innerHTML='<span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+((b.people&&b.people!=='--')?b.people:'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
     const animate = !(opts && opts.animate===false) && b.run==='运行中' && !finalNow;
-    demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? 0 : null);
+    demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? pctOf(b) : null);
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
     if(tab==='run' && !preRunNow && animate) startDemo(b); else stopDemo();
   }
   function manualRefresh(){
     const b=batches.find(x=>x.id===curId); if(!b) return;
-    if(b.run==='运行中') b.progress=Math.min(96,(Number(b.progress)||0)+3);
-    render(curId,{animate:false});
     if(typeof renderBatches==='function') renderBatches();
     toast('已刷新','已重新拉取执行进度与批次信息。');
   }
@@ -5048,9 +5125,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   if(st) st.addEventListener('change',function(){ state.batchStatus=this.value; renderBatches(); });
 
   /* Batch 列表列设置 */
-  const BCOL_DEFS=[['name','Batch Name'],['task','Task Name'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
+  const BCOL_DEFS=[['name','Batch Name'],['task','Task Name'],['taskId','Task ID'],['users','批次人数'],['success','成功人数'],['rate','成功率'],['verify','核验状态'],['run','进行状态'],['gen','生成时间'],['started','执行开始时间'],['ended','执行结束时间'],['duration','总耗时'],['slice','切片日期']];
   const bcolState={}; BCOL_DEFS.forEach(([k])=>bcolState[k]=true);
-  ['success','gen','started','ended','duration','slice'].forEach(k=>bcolState[k]=false);
+  const BCOL_DEFAULT_OFF=['taskId','success','gen','started','ended','duration','slice'];
+    BCOL_DEFAULT_OFF.forEach(k=>bcolState[k]=false);
   function applyBatchCols(){
     document.querySelectorAll('#view-batches [data-bcol]').forEach(el=>{
       const k=el.dataset.bcol;
@@ -5063,9 +5141,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function buildBatchColPanel(){
     const panel=document.getElementById('batchColPanel'); if(!panel) return;
     panel.innerHTML=BCOL_DEFS.map(([k,label])=>`<label><input type="checkbox" data-bcol-toggle="${k}" ${bcolState[k]?'checked':''}>${label}</label>`).join('')
-      +'<div class="col-foot"><span>勾选要显示的列</span><button type="button" id="bcolResetBtn">全部显示</button></div>';
+      +'<div class="col-foot"><button type="button" id="bcolRestoreBtn">恢复默认</button><button type="button" id="bcolResetBtn">全部显示</button></div>';
     panel.querySelectorAll('[data-bcol-toggle]').forEach(cb=>cb.addEventListener('change',()=>{bcolState[cb.dataset.bcolToggle]=cb.checked; applyBatchCols();}));
     panel.querySelector('#bcolResetBtn')?.addEventListener('click',()=>{BCOL_DEFS.forEach(([k])=>bcolState[k]=true); panel.querySelectorAll('[data-bcol-toggle]').forEach(cb=>cb.checked=true); applyBatchCols();});
+    panel.querySelector('#bcolRestoreBtn')?.addEventListener('click',()=>{BCOL_DEFS.forEach(([k])=>bcolState[k]=!BCOL_DEFAULT_OFF.includes(k)); panel.querySelectorAll('[data-bcol-toggle]').forEach(cb=>cb.checked=!BCOL_DEFAULT_OFF.includes(cb.dataset.bcolToggle)); applyBatchCols();});
   }
   document.getElementById('batchColBtn')?.addEventListener('click',e=>{e.stopPropagation();document.getElementById('batchColPanel')?.classList.toggle('hidden');});
   document.addEventListener('click',e=>{ if(!e.target.closest('#batchColBtn') && !e.target.closest('#batchColPanel')) document.getElementById('batchColPanel')?.classList.add('hidden'); });
@@ -5140,7 +5219,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   const EXTRA = [
     {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
     {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
-    {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'手动生成',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
+    {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'—',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
     {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
   ];
   tasks.forEach((t,i)=>{ const e=EXTRA[i]||{}; Object.keys(e).forEach(k=>{ if(t[k]==null||t[k]==='') t[k]=e[k]; });
@@ -5231,7 +5310,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function buildColPanel(){
     const panel=document.getElementById('taskColPanel'); if(!panel) return;
     panel.innerHTML=COL_DEFS.map(([k,label])=>`<label><input type="checkbox" data-col-toggle="${k}" ${colState[k]?'checked':''}>${label}</label>`).join('')
-      +'<div class="col-foot"><span>勾选要显示的列</span><button type="button" id="colResetBtn">全部显示</button></div>';
+      +'<div class="col-foot"><button type="button" id="colResetBtn">全部显示</button></div>';
     panel.querySelectorAll('[data-col-toggle]').forEach(cb=>cb.addEventListener('change',()=>{
       colState[cb.dataset.colToggle]=cb.checked; applyCols();
     }));
@@ -5288,7 +5367,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     set('#dtName',t.name); set('#dtId',t.id); set('#dtBusinessId',t.businessId||'MTN_Uganda'); set('#dtProduct',t.product); set('#dtDesc',t.description||'');
     set('#dtStrategy',TASK_STRATEGIES.includes(t.strategy)?t.strategy:TASK_STRATEGIES[0]);
     set('#dtVersionType',t.versionType||'正式'); set('#dtVersion',t.strategyVersion||'1');
-    set('#dtReportScene',t.reportScene||'贷前'); set('#dtReportGen',t.reportGen||'自动生成');
+    set('#dtReportScene',t.reportScene||'贷前'); set('#dtReportGen',(t.reportGen&&t.reportGen!=='—')?t.reportGen:'自动生成');
     const title=document.getElementById('tdTitle'); if(title) title.textContent=t.name;
     const sub=document.getElementById('tdSubtitle'); if(sub) sub.textContent=`${t.id} · ${t.opco||''} / ${t.product||''}`;
     renderDtNotifyEvents(t);
@@ -5320,6 +5399,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const t=tasks.find(x=>x.id===detailTaskId); if(!t||!detailEditing) return;
     const name=(document.getElementById('dtName')?.value||'').trim();
     if(!name){ toast('Task 名称不能为空','请填写 Task name 后再保存。'); document.getElementById('dtName')?.focus(); return; }
+    if(tasks.some(x=>x.id!==t.id&&x.name===name)){ toast('Task 名称已存在','请使用不重复的 Task name。'); document.getElementById('dtName')?.focus(); return; }
     t.name=name;
     t.businessId=document.getElementById('dtBusinessId')?.value||t.businessId;
     const OPCO_MAP={MTN_Uganda:'MTN Uganda',MTN_Ghana:'MTN Ghana',MTN_CDI:'MTN CDI'};
@@ -5330,7 +5410,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     t.versionType=document.getElementById('dtVersionType')?.value||t.versionType;
     t.strategyVersion=document.getElementById('dtVersion')?.value||t.strategyVersion;
     t.reportScene=document.getElementById('dtReportScene')?.value||t.reportScene;
-    t.reportGen=(t.reportScene==='无报告')?'—':(document.getElementById('dtReportGen')?.value||t.reportGen);
+    const rg=document.getElementById('dtReportGen')?.value||''; t.reportGen=(t.reportScene==='无报告')?'—':((rg&&rg!=='—')?rg:'自动生成');
     t.updatedAt=nowStamp();
     t.notifyEvents=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
     fillTaskDetail(t); setTaskDetailEditable(false); renderTasks(document.getElementById('taskSearch')?.value||'');
@@ -5419,11 +5499,15 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const t=tasks.find(x=>x.id===runTaskId); if(!t) return;
     const slice=document.getElementById('runSliceDate')?.value||'';
     if(!slice){ toast('请选择切片日期','发起跑批前必须指定使用哪一天的切片。'); return; }
+    const todayISO=fmtISODate(new Date());
+    if(slice>todayISO){ toast('切片日期不可用','只能选择已就绪的切片日期。'); return; }
     const batchName=(document.getElementById('runBatchName')?.value||'').trim();
     if(!batchName){ toast('请填写 Batch Name','请为本次跑批填写一个 Batch Name。'); document.getElementById('runBatchName')?.focus(); return; }
     if(runExecMode==='scheduled'){
       const at=document.getElementById('runScheduleAt')?.value||'';
       if(!at){ toast('请选择计划启动时间','预约执行必须指定计划启动时间。'); document.getElementById('runScheduleAt')?.focus(); return; }
+      if(at.slice(0,10)<todayISO){ toast('计划启动时间无效','预约时间不得早于今天。'); document.getElementById('runScheduleAt')?.focus(); return; }
+      if(slice>at.slice(0,10)){ toast('切片日期晚于计划启动','请调整切片日期或计划启动时间。'); return; }
     }
     if(!isNoReportTask(t) && !cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
@@ -5436,14 +5520,19 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const requestedAt=`${fmtISODate(now)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
     const scheduledAt=document.getElementById('runScheduleAt')?.value||'';
     batches.unshift({ id, batchName, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
-      requestedAt:runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):requestedAt,
+      requestedAt, plannedStartAt:(runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):''),
+      groupId:(t.dataScope||'').split(' · ')[0]||'limitIncreaseGroupV1',
       sliceAt:slice+' 21:50', compareBatch:(isNoReportTask(t)?null:cmpSelectedId), startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
-      downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--' });
+      downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--', isNew:true });
     if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'}; }
     closeRunTaskModal();
+    if(window.__listPage) window.__listPage.batch=1;
+    if(typeof state!=='undefined'){ state.batchQuery=''; state.batchStatus=''; state.batchTaskFilter=null; }
+    if(document.getElementById('batchSearch')) document.getElementById('batchSearch').value='';
+    if(document.getElementById('batchStatusFilter')) document.getElementById('batchStatusFilter').value='';
     if(typeof renderBatches==='function') renderBatches();
-    toast('跑批已发起',`${id} 已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice}${isNoReportTask(t)?'':' · 对比 '+cmpSelectedId}。`);
+    toast('跑批已发起',`${id}（${batchName}）已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice}${isNoReportTask(t)?'':' · 对比 '+cmpSelectedId}。`);
   }
 
   /* ---------------- 绑定 ---------------- */
@@ -5868,41 +5957,53 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     if(t==='task'){ if(typeof window.renderTasks==='function') window.renderTasks(document.getElementById('taskSearch')?.value||''); }
     else if(typeof window.renderBatches==='function') window.renderBatches();
   }
+  function applyJump(inp){
+    var t=inp.dataset.listJump==='task'?'task':'batch';
+    var pages=Math.max(1,parseInt(inp.dataset.listPages,10)||1);
+    var raw=(inp.value||'').trim();
+    if(!window.__listPage) window.__listPage={task:1,batch:1};
+    var cur=window.__listPage[t]||1;
+    if(!/^[0-9]+$/.test(raw)) window.__listPage[t]=cur;              /* 非法输入回到当前页 */
+    else window.__listPage[t]=Math.min(pages,Math.max(1,parseInt(raw,10))); /* 超范围收敛 */
+    rerender(t);
+  }
   document.addEventListener('click',function(e){
+    var num=e.target.closest('[data-list-page-num]');
+    if(num){
+      var t=num.dataset.listTarget==='task'?'task':'batch';
+      if(!window.__listPage) window.__listPage={task:1,batch:1};
+      window.__listPage[t]=Math.max(1,parseInt(num.dataset.listPageNum,10)||1);
+      rerender(t); return;
+    }
     var btn=e.target.closest('[data-list-page]'); if(!btn) return;
-    var t=btn.dataset.listTarget==='task'?'task':'batch';
+    var t2=btn.dataset.listTarget==='task'?'task':'batch';
     var d=btn.dataset.listPage;
     if(!window.__listPage) window.__listPage={task:1,batch:1};
-    if(d==='first') window.__listPage[t]=1;
-    else if(d==='last') window.__listPage[t]=9999;
-    else window.__listPage[t]=Math.max(1,(window.__listPage[t]||1)+(d==='next'?1:-1));
-    rerender(t);
+    window.__listPage[t2]=Math.max(1,(window.__listPage[t2]||1)+(d==='next'?1:-1));
+    rerender(t2);
   });
   document.addEventListener('change',function(e){
-    var inp=e.target.closest('[data-list-jump]');
-    if(inp){
-      var t=inp.dataset.listJump;
-      var max=Math.max(1,parseInt(inp.max,10)||1);
-      var v=Math.min(max,Math.max(1,parseInt(inp.value,10)||1));
-      if(!window.__listPage) window.__listPage={task:1,batch:1};
-      window.__listPage[t]=v;
-      rerender(t);
-      return;
-    }
     var sel=e.target.closest('[data-list-size]');
     if(sel){
-      var st=sel.dataset.listSize;
+      var st=sel.dataset.listSize==='task'?'task':'batch';
       if(!window.__listPageSize) window.__listPageSize={task:5,batch:5};
       window.__listPageSize[st]=parseInt(sel.value,10)||5;
       if(!window.__listPage) window.__listPage={task:1,batch:1};
       window.__listPage[st]=1;
-      rerender(st);
+      rerender(st); return;
     }
+    var inp=e.target.closest('[data-list-jump]');
+    if(inp) applyJump(inp);
   });
   document.addEventListener('keydown',function(e){
     if(e.key!=='Enter') return;
-    var inp=e.target.closest('[data-list-jump]'); if(inp) inp.blur();
+    var inp=e.target.closest('[data-list-jump]');
+    if(inp){ e.preventDefault(); applyJump(inp); inp.blur(); }
   });
+  document.addEventListener('blur',function(e){
+    var inp=e.target&&e.target.closest?e.target.closest('[data-list-jump]'):null;
+    if(inp) applyJump(inp);
+  },true);
   ['taskSearch','batchSearch'].forEach(function(id){
     var el=document.getElementById(id); if(!el) return;
     el.addEventListener('input',function(){
