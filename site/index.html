@@ -1596,6 +1596,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 <style id="bdTermStyle">.bd-statebar.term{background:#FFF7EA;color:#9A5B00;}
 </style>
 <style id="bdNoteDateStyle">.bd-note{grid-template-columns:128px minmax(0,1fr) auto;}.bd-note-time{white-space:nowrap;}</style>
+<style id="bdLiveStyle">
+.bd-exec-metrics .bd-metric-live .bd-metric-line{display:flex;align-items:baseline;gap:9px;margin-top:8px;}
+.bd-exec-metrics .bd-metric-live b{display:inline;font-size:40px;line-height:1.05;}
+.bd-exec-metrics .bd-metric-live i{display:inline;font-style:normal;font-size:12.5px;color:#8794A6;margin-top:0;}
+</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4848,7 +4853,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
     const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
-    const live=metric('处理速度',avgSpeed,'万人 / 小时');
+    const live='<div class="bd-metric bd-metric-live"><span>处理速度</span><div class="bd-metric-line"><b>'+avgSpeed+'</b><i>万人 / 小时</i></div></div>';
     const waitBlock='<div class="bd-wait"><b>等待启动</b></div>';
     const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
     const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
