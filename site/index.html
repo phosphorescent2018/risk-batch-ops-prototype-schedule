@@ -1595,6 +1595,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
 <style id="bdTermStyle">.bd-statebar.term{background:#FFF7EA;color:#9A5B00;}
 </style>
+<style id="bdNoteDateStyle">.bd-note{grid-template-columns:128px minmax(0,1fr) auto;}.bd-note-time{white-space:nowrap;}</style>
 </head>
 <body>
   <svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
@@ -4874,9 +4875,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     };
     const defaultEvents=Object.keys(EV);
     const hasRecords=!preRunB;
+    const noteDate=b.businessDate||'';
     const noteRows=hasRecords?defaultEvents.map(k=>LOG[k].map(([t,r])=>
       '<div class="bd-note">'+
-        '<span class="bd-note-time">'+t+'</span>'+
+        '<span class="bd-note-time">'+noteDate+' '+t+'</span>'+
         '<span class="bd-note-name">'+EV[k]+'</span>'+
         '<span class="bd-note-state">已推送</span>'+
       '</div>').join('')).join(''):'';
