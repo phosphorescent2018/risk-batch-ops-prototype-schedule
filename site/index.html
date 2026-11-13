@@ -4808,7 +4808,7 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
     const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durationMin+' 分钟','全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
     const live=metric('处理速度',avgSpeed,'万人 / 小时');
-    const waitBlock='<div class="bd-wait"><b>等待启动</b><span>计划启动 '+(b.scheduleAt||b.requestedAt||'—')+' · 切片 '+(b.expectedSliceDate||'—')+' · '+fmtCount(people)+' 人</span></div>';
+    const waitBlock='<div class="bd-wait"><b>等待启动</b></div>';
     const right=preRunB?waitBlock:'<div class="bd-exec-metrics'+(fin?'':' solo')+'">'+(fin?summary:live)+'</div>';
     const kicker=preRunB?'等待启动':(fin?'执行总结':'执行进度');
     const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告');
