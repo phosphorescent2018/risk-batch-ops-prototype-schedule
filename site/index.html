@@ -1972,7 +1972,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <div class="bl-bar">
           <div class="bl-search">
             <svg class="icon icon-sm"><use href="#i-search"/></svg>
-            <input id="batchSearch" type="search" placeholder="搜索批次号 / 人群组" aria-label="搜索批次">
+            <input id="batchSearch" type="search" placeholder="搜索批次号 / Batch Name / 人群组" aria-label="搜索批次">
           </div>
           <select class="bl-filter" id="batchStatusFilter" aria-label="批次状态">
             <option value="">全部状态</option>
@@ -3577,7 +3577,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const q=(state.batchQuery||'').toLowerCase();
       const st=state.batchStatus||'';
       let filtered = state.batchTaskFilter ? batches.filter(b=>b.taskId===state.batchTaskFilter) : batches.slice();
-      if(q) filtered = filtered.filter(b=>String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q)||String(b.batchName||'').toLowerCase().includes(q));
+      if(q) filtered = filtered.filter(b=>{
+        const dn=String(b.batchName||(((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')+' · '+(b.businessDate||b.expectedSliceDate||''))).toLowerCase();
+        return String(b.id).toLowerCase().includes(q)||String(b.groupId||'').toLowerCase().includes(q)||dn.includes(q);
+      });
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
@@ -4996,7 +4999,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     el('bdTitle').textContent=b.id;
     {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
-    el('bdMeta').innerHTML='<span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+(b.people||'—')+' 人</span>';
+    el('bdMeta').innerHTML='<span>Batch Name '+(b.batchName||(((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')+' · '+(b.businessDate||b.expectedSliceDate||'')))+'</span><i>·</i><span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+(b.people||'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
