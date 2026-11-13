@@ -5626,7 +5626,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const table=list.length
       ? `<table class="sch-run-table"><thead><tr><th>计划时间</th><th>结果</th><th>关联 Batch</th><th>对比批次 / 备注</th></tr></thead><tbody>${list.map(r=>`<tr><td class="mono">${r.at}</td><td>${badge(r.result,cls(r.result))}</td><td class="mono">${r.batchId||'—'}</td><td class="mono">${r.reason||r.compare||'—'}</td></tr>`).join('')}</tbody></table>`
       : '<div class="sch-empty">暂无触发记录</div>';
-    const pager=all.length>per?`<div class="sch-pager"><span>共 ${all.length} 条 · 第 ${schRunsPage}/${pages} 页</span><button type="button" data-sch-run-page="prev" ${schRunsPage<=1?'disabled':''}>上一页</button><button type="button" data-sch-run-page="next" ${schRunsPage>=pages?'disabled':''}>下一页</button></div>`:'';
+    const pager=all.length>per?`<div class="sch-pager"><span>共 ${all.length} 条 · 第 ${schRunsPage}/${pages} 页</span><button type="button" data-sch-run-page="prev" ${schRunsPage<=1?'disabled':''} aria-label="Previous page">‹</button><button type="button" data-sch-run-page="next" ${schRunsPage>=pages?'disabled':''} aria-label="Next page">›</button></div>`:'';
     return '<div class="sch-runs-title">最近触发</div>'+table+pager;
   }
   function openSchDetailRuns(id){
