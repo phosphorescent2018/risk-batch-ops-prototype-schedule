@@ -3577,7 +3577,7 @@ window.listPagerHtml=function(target,total,pg,pages){
         const empty='';
         const actDetail=ic('i-eye','查看详情',`data-detail-modal="${b.id}"`);
         const actMonitor='';
-        const actStop=(isRunning && runLabel!=='失败')?ic('i-stop','终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
+        const actStop=((isRunning||preRun) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
         const manualReport=rowTask && rowTask.reportGen==='手动生成';
         const noReport=!!rowTask && rowTask.reportScene==='无报告';
