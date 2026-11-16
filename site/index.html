@@ -3243,7 +3243,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         let dot='',state='',copy='',riskBtn='';
         if(['已完成','待修复','运行中','已停止','已终止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
         else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn='';}
-        else if(b.run==='待风险确认'){dot='warn';state='存在风险 · 等待确认';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
+        else if(b.run==='待风险确认'){dot='warn';state='批次尚未启动';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
         else if(b.run==='已就绪'){dot='green';state='100% 通过 · 可提前开始';copy='已满足启动条件。计划时间前可人工立即开始；到计划时间仍未启动则按自动跑批配置执行。';}
         else if(b.autoCheckMode==='manual'){dot='warn';state='等待手动核验';copy='收到数据就绪通知后不会自动执行 Manifest，请任务负责人手动核验后再启动。';}
         else {dot='';state='等待数据就绪通知';copy=`${pass}/${total} 通过，${pending} 项待检查；大数据侧发送切片就绪请求后自动核验。`;}
