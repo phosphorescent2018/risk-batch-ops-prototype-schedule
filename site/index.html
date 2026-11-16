@@ -5128,12 +5128,12 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const blockChecks=mNow?((mNow.checks||[]).filter(c=>c.result==='BLOCK')):[];
     const warnChecks=mNow?((mNow.checks||[]).filter(c=>c.result==='WARN')):[];
     const preRunHead='批次尚未启动';
-    const preRunSub='核验完成后按计划时间启动。';
+    const preRunSub='';
     const reasonHtml=(blockChecks.concat(warnChecks)).length
       ? blockChecks.map(c=>'<div class="bd-reason"><b>阻断</b><span>'+c.name+'：'+c.observed+'（阈值 '+c.threshold+'）</span></div>').join('')
         + warnChecks.map(c=>'<div class="bd-reason warn"><b>待确认</b><span>'+c.name+'：'+c.observed+'</span></div>').join('')
       : '';
-    const waitBlock='<div class="bd-wait"><b>'+preRunHead+'</b><span>'+preRunSub+'</span></div>';
+    const waitBlock='<div class="bd-wait"><b>'+preRunHead+'</b>'+(preRunSub?'<span>'+preRunSub+'</span>':'')+'</div>';
     /* 运行中：进度百分比 + 分片进度 + 开始时间（100% 终态仍不显示百分比） */
     const pctNow=Math.max(0,Math.min(100,p));
     const liveBlock='<div class="bd-exec-metrics solo">'+live+'</div>'+
