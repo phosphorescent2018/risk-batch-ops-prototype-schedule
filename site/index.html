@@ -1530,6 +1530,9 @@
 .bd-repair .bd-btn{height:32px;padding:0 16px;flex:0 0 auto;}
 .bd-repair-note{font-size:12px;color:#96A2B4;}
 .bd-btn.loading{opacity:.8;cursor:default;}
+.bd-kv-val{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.bd-btn-xs{height:20px;padding:0 8px;font-size:10.5px;border-radius:6px;line-height:18px;}
+.bd-btn-xs i.spin{width:10px;height:10px;}
 .bd-kv b .badge{font-size:11px;font-weight:600;}
 </style>
 <style id="bdStateStyle">.bd-wait{display:flex;flex-direction:column;gap:9px;padding-left:26px;border-left:1px solid #EDF0F5;}
@@ -2636,7 +2639,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', startedAt:'2026-06-23 22:05', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, endedAt:'2026-06-24 06:40', review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
       { id:'B20260624001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-24', expectedSliceDate:'2026-06-22', requestedAt:'2026-06-24 22:00', sliceAt:'2026-06-22 21:50', startedAt:'2026-06-24 22:05', endedAt:'2026-06-25 05:20', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'待提交包', reviewClass:'amber', downstream:'待发布', downstreamClass:'gray', report:'2 / 4', reportClass:'amber', people:'25,000' },
       { id:'B20260424001', opco:'MTN Uganda', businessDate:'2026-04-24', expectedSliceDate:'2026-04-22', requestedAt:'2026-04-24 22:15', sliceAt:'2026-04-22 22:00', startedAt:'2026-04-24 22:20', endedAt:'2026-04-25 04:35', compareBatch:'B20260324001', run:'待修复', runClass:'amber', progress:96, review:'已完成', reviewClass:'green', downstream:'部分失败', downstreamClass:'amber', report:'3 / 4', reportClass:'amber', people:'23,980' },
-      { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
+      { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', startedAt:'2026-06-25 00:20', lastUpdateAt:'2026-06-25 06:05', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
       { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
       { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', startedAt:'2026-05-24 21:35', endedAt:'2026-05-25 05:10', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
       { id:'B20260331001', opco:'MTN Uganda', businessDate:'2026-03-31', expectedSliceDate:'2026-03-29', requestedAt:'2026-03-31 22:00', sliceAt:'2026-03-29 21:50', compareBatch:'B20260228001', startMode:'scheduled', run:'待风险确认', runClass:'amber', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,060' },
@@ -2655,31 +2658,59 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function fmtDateTime(d){ return d?`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`:'—'; }
     function shiftMinutes(v,min){ const t=parseTs(v); return isNaN(t)?null:fmtDateTime(new Date(t+min*60000)); }
     function batchTerminal(b){ return ['已完成','待修复','已停止','已终止','成功','失败'].includes(b&&b.run); }
-    /* 分片三数自洽：成功 + 失败 = 总分片；终态按「全部跑完」结算，运行中按当前进度折算 */
+    /* 分片三数自洽：完成数一律按真实进度折算，终态不再用「总数 − 失败数」反推
+       语义分开：待修复 → 成功 X / 失败 Y（X+Y=总数）；失败 / 已终止 → 已完成 X / 未完成 Y */
     function shardPlan(b){
       const people=batchPeople(b), total=Math.max(1,Math.round(people/300));
-      let failed=0;
-      if(b&&(b.run==='待修复'||b.run==='失败')) failed=Math.max(1,Math.round(total*0.02));
-      else if(b&&(b.run==='已停止'||b.run==='已终止')) failed=Math.max(1,Math.round(total*0.01));
-      failed=Math.min(failed,total);
-      const terminal=batchTerminal(b);
-      const pct=terminal?Math.round((total-failed)/total*1000)/10:(Number(b&&b.progress)||0);
-      const completed=terminal?(total-failed):Math.max(0,Math.min(total-failed,Math.round(total*(Number(b&&b.progress)||0)/100)));
-      return {total:total,failed:failed,completed:completed,progress:pct};
+      const run=b&&b.run;
+      const pct=Math.max(0,Math.min(100,Number(b&&b.progress)||0));
+      /* 分片级「最终失败」只出现在跑完但仍有分片失败的批次（待修复）；
+         失败 / 已终止是整批中断，不是分片失败，不能记成分片 failed */
+      const failed=(run==='待修复')?Math.min(total,Math.max(1,Math.round(total*(100-pct)/100))):0;
+      /* 已完成 / 待修复 / 已停止：整批已跑完，所有分片进入终态；失败 / 已终止 / 运行中：按进度折算 */
+      const ranToEnd=(run==='已完成'||run==='待修复'||run==='已停止');
+      const completed=ranToEnd?Math.max(0,total-failed):Math.max(0,Math.min(total,Math.round(total*pct/100)));
+      const unfinished=Math.max(0,total-completed);
+      return {total:total,failed:failed,completed:completed,unfinished:unfinished,ranToEnd:ranToEnd,progress:pct};
     }
     function batchHours(b){
       const a=parseTs(b&&(b.startedAt||b.requestedAt)), z=parseTs(b&&b.endedAt);
       if(isNaN(a)||isNaN(z)||z<=a) return null;
       return (z-a)/3600000;
     }
-    /* 平均速度 = 批次人数 ÷ 实际耗时；单位自适应：≥1 万用「万」，否则人/小时 */
-    function avgSpeed(b){ const h=batchHours(b), n=batchPeople(b); return (!h||!n)?null:n/h; }
-    function speedParts(b){
-      const v=avgSpeed(b);
-      if(v==null) return {value:'—',unit:''};
+    /* 已完成人数：跑完的批次按全量人数结算，中断批次按真实进度折算 */
+    function donePeopleOf(b){
+      const people=batchPeople(b), sp=shardPlan(b);
+      return sp.ranToEnd?people:Math.round(people*sp.progress/100);
+    }
+    /* 平均速度 = 已完成人数 ÷ 实际耗时；单位自适应：≥1 万用「万」，否则人/小时 */
+    function avgSpeed(b){
+      const h=batchHours(b), done=donePeopleOf(b);
+      if(!h||!done) return null;   /* 未开始 / 无已完成人数 → 「—」，不再拿全量人数除全程 */
+      return done/h;
+    }
+    /* 运行中处理速度 = 已完成人数 ÷ 已运行时长（分钟级），随进度实时变化 */
+    function liveSpeedOf(b, pct){
+      const people=batchPeople(b);
+      const p=Math.max(0,Math.min(100,pct==null?(Number(b&&b.progress)||0):pct));
+      const a=parseTs(b&&(b.startedAt||b.requestedAt)), z=parseTs(b&&(b.lastUpdateAt||b.endedAt));
+      if(isNaN(a)||isNaN(z)||z<=a) return null;
+      const hours=(z-a)/3600000, done=people*p/100;
+      if(!(hours>0)||!(done>0)) return null;
+      return done/hours;
+    }
+    /* 已运行时长（分钟），运行中速度口径说明用 */
+    function runElapsedMin(b){
+      const a=parseTs(b&&(b.startedAt||b.requestedAt)), z=parseTs(b&&(b.lastUpdateAt||b.endedAt));
+      if(isNaN(a)||isNaN(z)||z<=a) return null;
+      return Math.round((z-a)/60000);
+    }
+    function speedUnitParts(v){
+      if(v==null||!isFinite(v)||v<=0) return {value:'—',unit:''};
       if(v>=10000) return {value:(v/10000).toFixed(2),unit:'万人 / 小时'};
       return {value:Math.round(v).toLocaleString('en-US'),unit:'人 / 小时'};
     }
+    function speedParts(b){ return speedUnitParts(avgSpeed(b)); }
     /* 核验 24h 截止：与 verifyInfoOf 同一套起点（verifyStartedAt → sliceAt → requestedAt） */
     function verifyDeadlineOf(b){
       const bs=(typeof batchStates!=='undefined'&&batchStates[b&&b.id])||{};
@@ -2796,7 +2827,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       B20260524001: { interventionApplied:true, packageValidated:true, reportGenerated:true, reportStatus:'success', published:true, pushStatus:'success' },
       B20260424001: { interventionApplied:true, packageValidated:true, reportGenerated:true, reportStatus:'success', published:true, pushStatus:'partial' },
       B20260331001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', verifyStatus:'pending', verifyStartedAt:'2026-03-29 21:50' },
-      B20260324001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'blocked' }
+      B20260324001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'blocked' },
+      B20260415001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending' },
+      B20260410001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending' }
     };
 
     let currentHealthEvidence=null;
@@ -2997,20 +3030,35 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
     function getManifest(id) {
       if (!manifestStates[id]) {
-        const b = batches.find(x => x.id === id);
-        const completed = b && (b.run === '已完成' || b.run === '待修复');
-        const isNew = !!(b && b.isNew);
-        const failedCheck = id === 'B20260622001';
+        const b = batches.find(x => x.id === id) || {};
+        const completed = b.run === '已完成' || b.run === '待修复';
+        const isNew = !!b.isNew;
+        /* 核验状态优先读批次自身的 review / reviewClass，不再对特定批次硬编码 FAILED */
+        const review = String(b.review||'');
+        let status='WAITING_CHECK';
+        if (review === '核验失败') status='FAILED';
+        else if (review === '核验中') status='CHECKING';
+        else if (isNew) status='WAITING_CHECK';
+        else if (completed) status='CLOSED';
+        else if (review === '核验通过' || b.startedAt) status='PASS';  /* 已启动说明跑前核验已通过 */
+        let checks=cloneManifestChecks();
+        if (status==='WAITING_CHECK') checks=checks.map(c=>({...c,result:'PENDING',observed:'等待核验',checkedAt:'--'}));
+        else if (status==='CHECKING') checks=checks.map((c,i)=>({...c,result:i<6?'PASS':'PENDING',observed:i<6?c.observed:'核验进行中',checkedAt:i<6?'21:52':'--'}));
+        else if (status==='FAILED') checks=checks.map(c=>c.code==='DATA_SLICE_READY'?{...c,result:'BLOCK',observed:'未找到指定切片分区',checkedAt:'21:40'}:c);
+        const firstLog = status==='WAITING_CHECK' ? {time:'21:50', title:'Manifest 已生成', detail:'10 项检查等待核验'}
+          : status==='CHECKING' ? {time:'21:55', title:'自动校验进行中', detail:'6 项通过 · 4 项核验中'}
+          : status==='FAILED' ? {time:'21:40', title:'切片检查阻断', detail:'未找到指定切片分区，核验未通过'}
+          : {time:'21:55', title:'自动校验完成', detail:'10 项检查全部通过'};
         manifestStates[id] = {
           version:'v2',
-          status: failedCheck ? 'FAILED' : (isNew ? 'WAITING_CHECK' : (completed ? 'CLOSED' : 'FROZEN')),
+          status: status,
           gate:completed ? 'STARTED' : 'SCHEDULED',
-          scheduledAt:b?.requestedAt || '--',
+          scheduledAt:b.requestedAt || '--',
           sla:'06:00',
-          expectedSliceDate:b?.expectedSliceDate||'',
-          checks:isNew?cloneManifestChecks().map(c=>({...c,result:'PENDING'})):cloneManifestChecks(),
+          expectedSliceDate:b.expectedSliceDate||'',
+          checks:checks,
           logs:[
-            {time:'21:55', title:'自动校验完成', detail:'10 项检查全部通过'},
+            firstLog,
             {time:'21:52', title:'OA 审批同步', detail:'业务负责人、风险负责人审批通过'},
             {time:'21:50', title:'Manifest 已冻结', detail:'v2 · 已生成输入快照与版本哈希'}
           ]
@@ -3743,7 +3791,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const manifestIssue = (mc.BLOCK||0) + (mc.WARN||0) + (mc.PENDING||0);
         const sopFlag=b.sopProfileId==='late'?' · 晚申请':b.sopProfileId==='adhoc'?' · 临时跑批':'';
         const manifestSummary = ((mc.BLOCK||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.BLOCK} 阻断` : (mc.WARN||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.WARN} 风险` : (mc.PENDING||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.PENDING} 待核验` : `${manifest.checks.length}/${manifest.checks.length} 通过`)+sopFlag;
-        const finished=['已完成','待修复','已停止','已终止'].includes(b.run);
+        const finished=['已完成','待修复','已停止','已终止','失败'].includes(b.run);
         const ic=(iconId,title,attrs,disabled)=>`<button class="bl-ic${disabled?' is-disabled':''}" ${attrs||''} ${disabled?'aria-disabled="true"':''} title="${title}" aria-label="${title}"><svg class="icon icon-sm"><use href="#${iconId}"/></svg></button>`;
         const empty='';
         const actDetail=ic('i-eye','查看详情',`data-detail-modal="${b.id}"`);
@@ -3761,17 +3809,31 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           actReport=ic('i-report',repState==='success'?'查看报告':idleTitle,finished?`data-report-action="${b.id}"`:'',!finished);
           if(finished && repState==='success') actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
         }
-        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : b.run==='待修复' ? '<span class="badge amber">待修复</span><div class="cell-sub">'+shardPlan(b).failed+' 个分片最终失败 · 可一键修复</div>' : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        const spRow=shardPlan(b);
+        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>'
+          : runLabel==='待修复' ? '<span class="badge amber">待修复</span><div class="cell-sub">成功 '+fmtCount(spRow.completed)+' / 失败 '+fmtCount(spRow.failed)+' 分片 · 可一键修复</div>'
+          : runLabel==='失败' ? '<span class="badge red">失败</span><div class="cell-sub">已完成 '+fmtCount(spRow.completed)+' / 未完成 '+fmtCount(spRow.unfinished)+' 分片 · 整批中断</div>'
+          : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">已完成 '+fmtCount(spRow.completed)+' / 未完成 '+fmtCount(spRow.unfinished)+' 分片 · 保留已完成分片</div>'
+          : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>'
+          : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        /* 列表侧分片口径（hover 气泡）：待修复 → 成功/失败；失败 / 已终止 → 已完成/未完成 */
+        const runTip = runLabel==='待修复' ? ('成功 '+fmtCount(spRow.completed)+' / 失败 '+fmtCount(spRow.failed)+' 分片 · 可一键修复')
+          : (runLabel==='失败'||runLabel==='已终止') ? ('已完成 '+fmtCount(spRow.completed)+' / 未完成 '+fmtCount(spRow.unfinished)+' 分片 · 整批中断，未完成分片不再调度')
+          : runLabel==='运行中' ? ('已完成 '+fmtCount(spRow.completed)+' / '+fmtCount(spRow.total)+' 分片 · 进度 '+(Number(b.progress)||0)+'%')
+          : runLabel==='成功' ? ('全部 '+fmtCount(spRow.total)+' 分片完成')
+          : (runLabel+' · 分片尚未开始');
         const hasRunList=(Number(b.progress)||0)>0 || !!b.startedAt;
         const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
+        /* 成功率只对「成功」（100%）和「待修复」（已完成人数 / 总人数）有意义；
+           失败 / 已终止不再伪造 96% 之类的成功率 */
         const successCount = runLabel==='成功' ? userCount
-          : runLabel==='失败' ? Math.round(userCount*0.96)
-          : ((runLabel==='运行中'||runLabel==='待修复'||(runLabel==='已终止'&&hasRunList)) && (Number(b.progress)||0)>0) ? Math.round(userCount*(Number(b.progress)||0)/100)
+          : (runLabel==='待修复' && (Number(b.progress)||0)>0) ? Math.round(userCount*(Number(b.progress)||0)/100)
           : null;
         const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
-        /* 未完成批次该列展示「进度」，只有终态才读作成功率 */
-        const rateCellText = runLabel==='运行中' ? ('进度 '+(Number(b.progress)||0).toFixed(1)+'%') : rateText;
-        const rateCellTitle = runLabel==='运行中' ? '运行中批次：当前执行进度，不代表成功率' : '成功人数占批次人数比例';
+        /* 运行中 / 失败 / 已终止：该列展示执行进度，只有成功（及待修复）才读作成功率 */
+        const progCell = ['运行中','失败','已终止'].includes(runLabel);
+        const rateCellText = progCell ? ('进度 '+(Number(b.progress)||0).toFixed(1)+'%') : rateText;
+        const rateCellTitle = progCell ? '当前执行进度，不代表成功率' : (runLabel==='待修复' ? '已完成人数占批次人数比例' : '成功人数占批次人数比例');
         const execStart=hasRunList ? (b.startedAt || b.requestedAt || '—') : '—';
         const execEnd=hasRunList ? (b.endedAt || '—') : '—';
         const durText=(execStart!=='—'&&execEnd!=='—')?(()=>{const a=new Date(execStart.replace(' ','T')),z=new Date(execEnd.replace(' ','T'));if(isNaN(a)||isNaN(z))return '—';const m=Math.max(0,Math.round((z-a)/60000));const h=Math.floor(m/60);return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min'));})():'—';
@@ -3787,7 +3849,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
           <td data-bcol="rate"><div class="bl-rate" title="${rateCellTitle}">${rateCellText}</div></td>
           <td data-bcol="verify"><div>${verifyCell}</div></td>
-          <td data-bcol="run"><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
+          <td data-bcol="run"><div class="bl-state-cell" title="${runTip}">${badge(runLabel,runClass)}</div></td>
           <td data-bcol="gen"><div class="bl-mono">${b.requestedAt||"—"}</div></td>
           <td data-bcol="started"><div class="bl-mono">${execStart}</div></td>
           <td data-bcol="ended"><div class="bl-mono">${execEnd}</div></td>
@@ -4120,7 +4182,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const b=batch||{}; const plan=(typeof shardPlan==='function')?shardPlan(b):{total:0,completed:0,failed:0};
       const tgts=((b.targetSystems)||['lms','digiops']).map(t=>String(t).toUpperCase()).join(' / ');
       box.innerHTML='<strong>多目标处理详情</strong>'+
-        '<span>'+b.id+' · '+tgts+' · 成功分片 '+fmtCount(plan.completed)+' / '+fmtCount(plan.total)+' · 失败 '+plan.failed+'</span>'+
+        '<span>'+b.id+' · '+tgts+' · '+(b.run==='待修复'?'成功 '+fmtCount(plan.completed)+' / 失败 '+plan.failed+' 分片':'已完成 '+fmtCount(plan.completed)+' / 未完成 '+fmtCount(plan.unfinished)+' 分片')+'（共 '+fmtCount(plan.total)+' 分片）</span>'+
         '<span>独立详情页（multi-target-detail.html）未随本次静态站点发布，结果处理与消费信息统一在批次详情弹窗查看。</span>'+
         '<button class="btn btn-sm primary" type="button" data-detail-modal="'+b.id+'">打开批次详情弹窗</button>';
     }
@@ -4611,7 +4673,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       }
       const eventReportBtn = $('#eventReportActionBtn');
       if (eventReportBtn) {
-        const finished=['已完成','待修复','已停止','已终止'].includes(b.run);
+        const finished=['已完成','待修复','已停止','已终止','失败'].includes(b.run);
         eventReportBtn.disabled = !finished;
         eventReportBtn.style.display = '';
         eventReportBtn.innerHTML = `${icon('file','icon icon-sm')}${!finished?'生成报告':bs.eventReportGenerated?'查看报告':'生成报告'}`;
@@ -4696,7 +4758,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function handleEventReportAction(batchId) {
       const id=batchId||state.currentBatchId; const b=batches.find(x=>x.id===id); const bs=batchStates[id];
       if(!b||!bs) return;
-      if(!['已完成','待修复','已停止','已终止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
+      if(!['已完成','待修复','已停止','已终止','失败'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
       const btn=$('#eventReportActionBtn');
       const tipReport=()=>toast('事件报告已生成','演示环境仅展示提示，报告文件不提供下载。');
       if(bs.eventReportGenerated){ tipReport(); return; }
@@ -5029,8 +5091,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     let seed=0; for(const ch of (b.id||'')) seed=(seed*31+ch.charCodeAt(0))%9973;
     const sp=speedParts(b);
     const hasSpeed=showResults && sp.value!=='—';
-    const avgSpeed=hasSpeed?sp.value:fmtCount(Math.round(900+(seed%500)));
-    const speedUnit=hasSpeed?(sp.unit||''):'万人 / 小时';
+    const avgSpeed=hasSpeed?sp.value:'—';
+    const speedUnit=hasSpeed?(sp.unit||''):'';
     const rowTaskNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
     const bsNow=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
     const eventReportState=(bsNow.eventReportGenerated||b.eventReportGenerated)?'已生成':'未生成';
@@ -5044,8 +5106,23 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const kv=(k,v,cls,raw)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+(raw?v:String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;'))+'</b></div>';
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
-    const summary=metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,speedUnit)+metric('总分片数',fmtCount(shards),'全部跑完');
-    const live='<div class="bd-metric bd-metric-live"><span>处理速度</span><div class="bd-metric-line"><b id="bdSpeedVal">'+avgSpeed+'</b><i>万人 / 小时</i></div></div>';
+    /* 失败分片行内修复入口：只有「待修复 + 失败分片>0」才出现，全页唯一修复入口 */
+    const repairInline = (b.run==='待修复' && failShards>0)
+      ? '<button class="bd-btn primary bd-btn-xs'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'修复失败分片')+'</button>'
+      : '';
+    /* 分片口径：待修复 → 成功 X / 失败 Y（X+Y=总数）；失败 / 已终止 → 已完成 X / 未完成 Y */
+    const shardKvLine = b.run==='待修复'
+      ? kv('成功分片',fmtCount(okShards),'ok')
+        +'<div class="bd-kv"><span>失败分片</span><span class="bd-kv-val"><b class="bad">'+fmtCount(failShards)+'</b>'+repairInline+'</span></div>'
+      : plan.ranToEnd
+      ? kv('已完成分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards))
+      : kv('已完成分片',fmtCount(okShards))+kv('未完成分片',fmtCount(plan.unfinished),'bad');
+    const summary=metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,speedUnit)+metric('总分片数',fmtCount(shards),plan.ranToEnd?'全部跑完':'计划总数');
+    /* 运行中处理速度：已完成人数 ÷ 已运行时长，单位自适应，随进度动画实时刷新 */
+    const liveSp=speedUnitParts(liveSpeedOf(b,pctOf(b)));
+    const liveElapsed=runElapsedMin(b);
+    const liveSub=(liveSp.unit||'')+(liveElapsed!=null?((liveSp.unit?' · ':'')+'已运行 '+hhmm(liveElapsed)):'');
+    const live='<div class="bd-metric bd-metric-live"><span>处理速度</span><div class="bd-metric-line"><b id="bdSpeedVal">'+liveSp.value+'</b><i id="bdSpeedUnit">'+liveSub+'</i></div></div>';
     /* 启动前：核验状态 / 指定切片 / 24h 截止 / 阻断原因，全部从 batch + Manifest 读取 */
     const mNow=(typeof getManifest==='function')?getManifest(b.id):null;
     const blockChecks=mNow?((mNow.checks||[]).filter(c=>c.result==='BLOCK')):[];
@@ -5076,8 +5153,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       '<div class="bd-progress-meta"><span>分片进度 <b id="bdProgShard">'+fmtCount(plan.completed)+' / '+fmtCount(shards)+' 分片</b></span><span>开始时间 <b>'+(b.startedAt||b.requestedAt||'—')+'</b></span></div></div>';
     const right=preRunView?waitBlock:(showResults?'<div class="bd-exec-metrics trio">'+summary+'</div>':liveBlock);
     const kicker=preRunView?'启动前核验':(showResults?'执行总结':'执行进度');
-    const abnormalText=b.failReason||(b.run==='待修复'?failShards+' 个分片最终失败，已完成分片保留，可一键修复':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告')));
-    const alertBar=(fin&&b.failReason)?'<div class="bd-sec" style="margin-top:0;padding:11px 16px;border-radius:10px;font-size:12.5px;line-height:1.6;'+(b.run==='失败'?'background:#FDEEEE;border:1px solid #F5CFCB;color:#C0392B;':(b.run==='待修复'?'background:#FEF6E7;border:1px solid #F3DCA8;color:#9A6A00;':'background:#F1F4F8;border:1px solid #DDE3EA;color:#4A5A70;'))+'">'+b.failReason+'</div>':'';
     const keyInfo = !showResults ? '' :
       '<div class="bd-sec bd-keyinfo">'+
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
@@ -5085,7 +5160,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':resultTxt==='待修复'?'warn':'bad')+
           kv('跑批创建时间',b.requestedAt||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
           kv('开始时间',startTs||'—')+kv('结束时间',endTs||'—')+kv('总耗时',durText2)+
-          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+
+          shardKvLine+
           kv('核验状态',verifyChip(b),'',true)+
         '</div>'+
       '</div>';
@@ -5093,19 +5168,26 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const partialLabel=b.run==='待修复';
     const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:partialLabel?'分片失败，进入待修复':'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
     const CH={SLICE_ANOMALY:'Webhook',BATCH_FAILED:'企微告警群',BATCH_DONE:'Webhook',REPORT_RESULT:'Webhook'};
-    /* 通知时间从批次开始 / 结束时间顺延（+2min / +40min / 结束 / 结束+3min），不再写死 14:0x */
+    /* 通知时间一律落在批次时间轴上：告警绝不晚于批次结束（失败 / 终止取 endedAt，或前 1~2 分钟） */
     const noteItems=[];
+    const ALERT_KEYS=['SLICE_ANOMALY','BATCH_FAILED'];
     const pushEv=(key,at,offsetMin)=>{
-      const t=(typeof shiftMinutes==='function')?shiftMinutes(at,offsetMin||0):null;
-      if(t) noteItems.push({t:t,k:key});
+      let t=(typeof shiftMinutes==='function')?shiftMinutes(at,offsetMin||0):null;
+      if(!t) return;
+      if(endTs && ALERT_KEYS.includes(key)){
+        const te=parseTs(t), ee=parseTs(endTs);
+        if(!isNaN(te)&&!isNaN(ee)&&te>ee) t=endTs;   /* 告警时间必须 <= endedAt */
+      }
+      noteItems.push({t:t,k:key});
     };
     if(showResults){
-      pushEv('SLICE_ANOMALY',startTs,2);
+      /* 只有确实存在异常（分片失败 / 整批中断）才发切片异常告警：成功批次不再无条件推一条 */
+      if(plan.failed>0 || !!b.failReason) pushEv('SLICE_ANOMALY',startTs,2);
       if(okLabel==='成功'){
         pushEv('BATCH_DONE',endTs||startTs,0);
         pushEv('REPORT_RESULT',endTs||startTs,3);
       }else{
-        pushEv('BATCH_FAILED',endTs||startTs,partialLabel?0:40);
+        pushEv('BATCH_FAILED',endTs||startTs,-2);
       }
       noteItems.sort((x,y)=>x.t.localeCompare(y.t));
     }
@@ -5136,15 +5218,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           notifyBlock+
         '</div>'+
       '</div>';
-    const repairBlock=(b.run==='待修复' && showResults)
-      ? '<div class="bd-repair"><div class="bd-repair-txt"><b>'+fmtCount(failShards)+' 个分片最终失败</b><span>只重跑失败分片，不重开整批；结束时间与总耗时按原跑批统计</span></div><button class="bd-btn primary'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'一键修复分片')+'</button></div>'
-      : '';
     return '<div class="bd-sec first bd-exec">'+
         '<div class="bd-exec-kicker">'+kicker+'</div>'+
         right+
       '</div>'+
-      repairBlock+
-      keyInfo+alertBar+
+      keyInfo+
       lowerBlock;
   }
 
@@ -5166,7 +5244,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const failN=plan.failed;
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge('运行中','blue');}
     let t0=performance.now()-(pctOf(b)/100)*DEMO_MS;
-    let speedNow=1150, speedTarget=1150, lastTargetAt=0, lastPaintAt=0;
+    let lastPaintAt=0;
     function frame(now){
       const k=Math.min(1,(now-t0)/DEMO_MS);
       const p=Math.min(99,100*k);   /* 运行中演示封顶 99%，100% 只属于终态 */
@@ -5176,10 +5254,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(el('bdProgBar')) el('bdProgBar').style.width=p.toFixed(1)+'%';
       if(el('bdProgShard')) el('bdProgShard').textContent=fmtCount(done)+' / '+fmtCount(shards)+' 分片';
       const clip=el('bdClipRect'); if(clip) clip.setAttribute('width', String(1000*k));
-      if(now-lastTargetAt>650){ speedTarget=900+Math.random()*500; lastTargetAt=now; }
-      speedNow += (speedTarget-speedNow)*0.06;
+      /* 处理速度随进度实时刷新：已完成人数 ÷ 已运行时长（分钟级），单位自适应 */
       if(now-lastPaintAt>90){
-        const sv=el('bdSpeedVal'); if(sv) sv.textContent=fmtCount(Math.round(Math.max(900,Math.min(1400,speedNow))));
+        const lsp=speedUnitParts(liveSpeedOf(b,p));
+        const sv=el('bdSpeedVal'); if(sv) sv.textContent=lsp.value;
+        const su=el('bdSpeedUnit'); if(su) su.textContent=(lsp.unit||'')+(runElapsedMin(b)!=null?((lsp.unit?' · ':'')+'已运行 '+hhmm(runElapsedMin(b))):'');
         lastPaintAt=now;
       }
       raf=requestAnimationFrame(frame);
@@ -5360,6 +5439,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     if(!t.createdAt) t.createdAt='2026-06-01 09:00';
     if(!t.updatedAt) t.updatedAt='2026-11-01 09:00';
   });
+  /* tasks 的 reportScene / reportGen 等字段在上面的合并里才补齐；
+     首屏 renderBatches 早于本脚本执行，这里补齐后重渲染一次，避免「报告类型」列首屏全是「—」 */
+  if(typeof window.renderBatches==='function'){ try{ window.renderBatches(); }catch(e){} }
 
   const pad=n=>String(n).padStart(2,'0');
   const fmtISODate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -5792,7 +5874,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     sliceRule:'T-1',comparePolicy:'上一次成功',fixedBaseline:'',
     nextAt:'—',runs:[],createdBy:'',createdAt:''};
   const schedules=[
-    {id:'SCH_101',name:'Uganda OD 月度调额 · 每日',taskId:'TRF_101',status:'running',cycle:'每日',weekday:'周一',monthday:'1 日',time:'22:00',sliceRule:'T-1',comparePolicy:'上一次成功',fixedBaseline:'',nextAt:'2026-11-13 22:00',createdBy:'HT',createdAt:'2026-06-01 09:00',runs:[
+    {id:'SCH_101',name:'Uganda OD 月度调额 · 每日',taskId:'TRF_101',status:'running',cycle:'每日',weekday:'周一',monthday:'1 日',time:'22:00',sliceRule:'T-1',comparePolicy:'上一次成功',fixedBaseline:'',nextAt:'2026-11-16 22:00',createdBy:'HT',createdAt:'2026-06-01 09:00',runs:[
       {at:'2026-11-12 22:00',result:'成功',batchId:'B20261112001',slice:'2026-11-11',compare:'B20260624001'},
       {at:'2026-11-11 22:00',result:'成功',batchId:'B20260626001',slice:'2026-11-10',compare:'B20260623001'},
       {at:'2026-11-10 22:00',result:'跳过',batchId:'—',slice:'2026-11-09',reason:'切片分区未就绪'},
@@ -5820,23 +5902,38 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     const d=new Date(); d.setDate(d.getDate()-(s.sliceRule==='T-2'?2:1));
     return fmtISODate(d);
   }
+  /* 下次跑批：从「当前 EAT 时刻」往后找最近一个满足周期 + 时刻的点；
+     今天该时刻还没到就取今天，已过才顺延（每日 +1 天 / 每周 +7 天只在必要时用） */
   function schNextAt(s){
     const time=(s&&s.time)||'22:00';
-    const d=new Date();
+    const parts=String(time).split(':');
+    const H=parseInt(parts[0],10), M=parseInt(parts[1],10);
+    const hh=isNaN(H)?22:H, mm=isNaN(M)?0:M;
+    const nowEat=new Date(Date.now()+3*3600*1000);        /* 与顶栏一致：UTC+3 墙钟 */
+    const y=nowEat.getUTCFullYear(), mo=nowEat.getUTCMonth(), day=nowEat.getUTCDate(), dow=nowEat.getUTCDay();
+    const nowMs=Date.UTC(y,mo,day,nowEat.getUTCHours(),nowEat.getUTCMinutes(),0,0);
+    const at=(Y,MO,D)=>Date.UTC(Y,MO,D,hh,mm,0,0);
+    const lastDay=(Y,MO)=>new Date(Date.UTC(Y,MO+1,0)).getUTCDate();
+    let ms;
     if(s&&s.cycle==='每周'){
       const target=['周日','周一','周二','周三','周四','周五','周六'].indexOf(s.weekday||'周一');
-      let delta=(target-d.getDay()+7)%7; if(delta===0) delta=7;
-      d.setDate(d.getDate()+delta);
+      const delta=((target<0?1:target)-dow+7)%7;
+      ms=at(y,mo,day+delta);
+      if(ms<=nowMs) ms=at(y,mo,day+delta+7);
     } else if(s&&s.cycle==='每月'){
-      const md=parseInt(s.monthday,10);
-      d.setDate(1); d.setMonth(d.getMonth()+1);
-      const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
-      d.setDate(isNaN(md)?last:Math.min(md,last));
+      const md=parseInt(s.monthday,10)||1;
+      ms=at(y,mo,Math.min(md,lastDay(y,mo)));
+      if(ms<=nowMs){ const ny=mo+1; ms=at(y+Math.floor(ny/12),ny%12,Math.min(md,lastDay(y+Math.floor(ny/12),ny%12))); }
     } else {
-      d.setDate(d.getDate()+1);
+      ms=at(y,mo,day);
+      if(ms<=nowMs) ms=at(y,mo,day+1);
     }
-    return `${fmtISODate(d)} ${time}`;
+    const d=new Date(ms);
+    const p2=n=>String(n).padStart(2,'0');
+    return `${d.getUTCFullYear()}-${p2(d.getUTCMonth()+1)}-${p2(d.getUTCDate())} ${time}`;
   }
+  /* 启用中的任务在载入时按当前 EAT 时刻重算下次跑批，避免写死的 nextAt 过期 */
+  schedules.forEach(s=>{ if(s.status==='running') s.nextAt=schNextAt(s); });
   function schLastRun(s){ const r=(s.runs||[])[0]; return r?`${r.at.slice(5)} · ${r.result}`:'—'; }
   function schDeleteBtn(s){
     const blocked=s.status==='running';
@@ -5982,6 +6079,12 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     setVal('schFixedBaseline',d.fixedBaseline);
     syncSchCycleFields(); syncSchCompareField();
   }
+  /* 新 ID = 现有最大序号 +1 且只增不减：删除任何一条后再新建都不会撞号，也不会复用旧号 */
+  let schSeq=schedules.reduce((m,x)=>{
+    const n=parseInt(String((x&&x.id)||'').replace(/[^0-9]/g,''),10);
+    return isNaN(n)?m:Math.max(m,n);
+  },100);
+  function schNextId(){ schSeq+=1; return 'SCH_'+schSeq; }
   function saveSchDetail(){
     const g=id=>document.getElementById(id)?.value||'';
     const isNew=schDetailIsNew;
@@ -5994,7 +6097,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     if(!name){ toast('名称不能为空','请填写定时任务名称后再保存。'); document.getElementById('schName')?.focus(); return; }
     const taskId=g('schTaskId');
     if(!taskId){ toast('缺少 Task 模板','请选择要引用的 Task 模板。'); return; }
-    const s=isNew?Object.assign({},SCH_DEFAULT,{id:'SCH_'+String(schedules.length+101),createdBy:'HT',createdAt:nowStamp(),runs:[]}):schById(schDetailId);
+    const s=isNew?Object.assign({},SCH_DEFAULT,{id:schNextId(),createdBy:'HT',createdAt:nowStamp(),runs:[]}):schById(schDetailId);
     if(!s) return;
     s.name=name; s.taskId=taskId;
     s.status=isNew?'running':s.status;
