@@ -5830,11 +5830,12 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
       if(n.matches && n.matches('[title]')) conv(n);
       if(n.querySelectorAll) n.querySelectorAll('[title]').forEach(conv);
     }
-    /* 列表/面板重渲染后原 hover 目标已被移除，直接收起气泡，等下一次 mouseover 再显示 */
-    if(muts.some(m=>m.removedNodes.length)) tip.classList.remove('show');
+    /* 只有 hover 的目标按钮真的被移除（列表重渲染）才收起气泡；其它节点变动不动它 */
+    if(tip._target && !document.body.contains(tip._target)){ tip.classList.remove('show'); tip._target=null; }
   }).observe(document.body,{childList:true,subtree:true});
   document.addEventListener('mouseover', e=>{
     const b=e.target.closest('[data-tip]'); if(!b || !b.dataset.tip) return;
+    tip._target=b;
     const r=b.getBoundingClientRect();
     tip.textContent=b.dataset.tip;
     const tw=tip.offsetWidth||120;
