@@ -4920,7 +4920,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const rowTaskNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
     const noReportNow=rowTaskNow.reportScene==='无报告';
     const bsNow=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
-    const reportState=noReportNow?'无报告':((bsNow.reportGenerated||b.reportGenerated||bsNow.eventReportGenerated)?'已生成':'未生成');
+    const eventReportState=noReportNow?'无报告':((bsNow.eventReportGenerated||b.eventReportGenerated)?'已生成':'未生成');
     const startTs=b.startedAt||b.requestedAt||'';
     const endTs=b.endedAt||'';
     const durText2=(()=>{ if(!startTs||!endTs)return '—'; const a=new Date(startTs.replace(' ','T')),z=new Date(endTs.replace(' ','T')); if(isNaN(a)||isNaN(z)||z<a)return '—'; const m=Math.round((z-a)/60000),h=Math.floor(m/60); return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min')); })();
@@ -4948,7 +4948,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
           kv('跑批创建时间',startTs||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
           kv('开始时间',startTs||'—')+kv('结束时间',endTs||'—')+kv('总耗时',durText2)+
-          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+(noReportNow?'':kv('报告状态',reportState))+
+          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')++
         '</div>'+
       '</div>';
     const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
@@ -4985,8 +4985,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const noReportCard='<div class="bd-report-head"><b>批次事件报告</b><span>—</span></div><div class="bd-notify-empty"><b>该 Task 未配置报告</b><span>报告场景为无报告，不生成事件报告</span></div>';
     const pdfCard='<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
           '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
-            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(reportState==='已生成'?(b.endedAt||b.requestedAt||'—'):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+reportState+'</b></div>'+
-            '<div class="bd-btns"><button class="bd-btn primary" '+(reportState==='已生成'?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(reportState==='已生成'?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>';
+            '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(eventReportState==='已生成'?(b.endedAt||b.requestedAt||'—'):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+eventReportState+'</b></div>'+
+            '<div class="bd-btns"><button class="bd-btn primary" '+(eventReportState==='已生成'?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(eventReportState==='已生成'?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>';
     const lowerBlock=runningNow
       ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+(noReportNow?noReportCard:phReport)+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
       : '<div class="bd-sec bd-lower">'+
