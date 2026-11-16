@@ -1605,7 +1605,7 @@
 </style>
 <script>
 window.__listPage={task:1,batch:1};
-window.__listPageSize={task:5,batch:5};
+window.__listPageSize={task:20,batch:20};
 window.listPagerHtml=function(target,total,pg,pages,per){
   per=per||5;
   pages=Math.max(1,Number(pages)||1);
@@ -3711,7 +3711,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
          return hay.includes(q);
        });
       if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','待修复':'待修复','已停止':'已终止','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
-      const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
+      const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||20, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
       let pg=Math.min(Math.max(1,lp.batch||1),pages);
       if(window.__listPage) window.__listPage.batch=pg;
@@ -5450,7 +5450,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const fr=document.getElementById('taskFilterReportScene')?.value||'';
     const rows=tasks.filter(t=>(!q||(t.name+' '+t.id+' '+(t.opco||'')+' '+t.strategy).toLowerCase().includes(q))
       &&(!fs||t.strategy===fs)&&(!fv||t.versionType===fv)&&(!fr||t.reportScene===fr));
-    const total=rows.length, per=(window.__listPageSize&&window.__listPageSize.task)||5, pages=Math.max(1,Math.ceil(total/per));
+    const total=rows.length, per=(window.__listPageSize&&window.__listPageSize.task)||20, pages=Math.max(1,Math.ceil(total/per));
     const lp=window.__listPage||{};
     let pg=Math.min(Math.max(1,lp.task||1),pages);
     if(window.__listPage) window.__listPage.task=pg;
@@ -6110,8 +6110,8 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     var sel=e.target.closest('[data-list-size]');
     if(sel){
       var st=sel.dataset.listSize==='task'?'task':'batch';
-      if(!window.__listPageSize) window.__listPageSize={task:5,batch:5};
-      window.__listPageSize[st]=parseInt(sel.value,10)||5;
+      if(!window.__listPageSize) window.__listPageSize={task:20,batch:20};
+      window.__listPageSize[st]=parseInt(sel.value,10)||20;
       if(!window.__listPage) window.__listPage={task:1,batch:1};
       window.__listPage[st]=1;
       rerender(st); return;
