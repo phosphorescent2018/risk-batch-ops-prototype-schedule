@@ -2710,8 +2710,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     }
     function speedUnitParts(v){
       if(v==null||!isFinite(v)||v<=0) return {value:'—',unit:''};
-      if(v>=10000) return {value:(v/10000).toFixed(2),unit:'万人 / 小时'};
-      return {value:Math.round(v).toLocaleString('en-US'),unit:'人 / 小时'};
+      return {value:(v/10000).toFixed(2),unit:'万人 / 小时'};
     }
     function speedParts(b){ return speedUnitParts(avgSpeed(b)); }
     /* 核验 24h 截止：与 verifyInfoOf 同一套起点（verifyStartedAt → sliceAt → requestedAt） */
