@@ -5742,18 +5742,18 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
 (function(){
   const tip=document.createElement('div'); tip.id='tipFloat'; document.body.appendChild(tip);
   const conv=b=>{ if(!b.title) return; if(b.hasAttribute('data-native-tip')) return; b.dataset.tip=b.title; b.removeAttribute('title'); };
-  document.querySelectorAll('button[title]').forEach(conv);
+  document.querySelectorAll('[title]').forEach(conv);
   new MutationObserver(muts=>{
     for(const m of muts) for(const n of m.addedNodes){
       if(n.nodeType!==1) continue;
-      if(n.matches && n.matches('button[title]')) conv(n);
-      if(n.querySelectorAll) n.querySelectorAll('button[title]').forEach(conv);
+      if(n.matches && n.matches('[title]')) conv(n);
+      if(n.querySelectorAll) n.querySelectorAll('[title]').forEach(conv);
     }
     /* 列表/面板重渲染后原 hover 目标已被移除，直接收起气泡，等下一次 mouseover 再显示 */
     if(muts.some(m=>m.removedNodes.length)) tip.classList.remove('show');
   }).observe(document.body,{childList:true,subtree:true});
   document.addEventListener('mouseover', e=>{
-    const b=e.target.closest('button[data-tip]'); if(!b || !b.dataset.tip) return;
+    const b=e.target.closest('[data-tip]'); if(!b || !b.dataset.tip) return;
     const r=b.getBoundingClientRect();
     tip.textContent=b.dataset.tip;
     const tw=tip.offsetWidth||120;
@@ -5764,7 +5764,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     tip.classList.add('show');
   });
   document.addEventListener('mouseout', e=>{
-    const b=e.target.closest('button[data-tip]'); if(!b) return;
+    const b=e.target.closest('[data-tip]'); if(!b) return;
     if(e.relatedTarget && b.contains(e.relatedTarget)) return;
     tip.classList.remove('show');
   });
