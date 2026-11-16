@@ -1480,6 +1480,7 @@
 .bd-exec-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-left:1px solid #EDF0F5;padding-left:26px;}
 .bd-exec-metrics.solo{grid-template-columns:200px;}
 .bd-metric{padding:2px 16px;border-right:1px solid #EDF0F5;}
+.bd-metric .bd-unit{font-size:11.5px;font-weight:500;margin-left:4px;color:#96A2B4;}
 .bd-metric:first-child{padding-left:0;}
 .bd-metric:last-child{border-right:0;}
 .bd-metric span{display:block;font-size:10px;letter-spacing:.06em;color:#96A2B4;margin-bottom:10px;}
@@ -5105,7 +5106,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const resultTxt=stateLabelOf(b);
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const kv=(k,v,cls,raw)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+(raw?v:String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;'))+'</b></div>';
-    const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
+    const metric=(label,val)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b></div>';
     /* 失败分片行内修复入口：只有「待修复 + 失败分片>0」才出现，全页唯一修复入口 */
     const repairInline = (b.run==='待修复' && failShards>0)
       ? '<button class="bd-btn primary bd-btn-xs'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'修复失败分片')+'</button>'
@@ -5117,7 +5118,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       : plan.ranToEnd
       ? kv('已完成分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards))
       : kv('已完成分片',fmtCount(okShards))+kv('未完成分片',fmtCount(plan.unfinished),'bad');
-    const summary=metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,speedUnit)+metric('总分片数',fmtCount(shards),plan.ranToEnd?'全部跑完':'计划总数');
+    const summary=metric('本次总耗时',durText2)+metric('平均速度',avgSpeed+(speedUnit?'<span class="bd-unit">'+speedUnit+'</span>':''))+metric('总分片数',fmtCount(shards));
     /* 运行中处理速度：已完成人数 ÷ 已运行时长，单位自适应，随进度动画实时刷新 */
     const liveSp=speedUnitParts(liveSpeedOf(b,pctOf(b)));
     const liveElapsed=runElapsedMin(b);
