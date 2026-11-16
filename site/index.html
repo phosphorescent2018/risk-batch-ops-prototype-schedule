@@ -5127,24 +5127,13 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const mNow=(typeof getManifest==='function')?getManifest(b.id):null;
     const blockChecks=mNow?((mNow.checks||[]).filter(c=>c.result==='BLOCK')):[];
     const warnChecks=mNow?((mNow.checks||[]).filter(c=>c.result==='WARN')):[];
-    const preRunHead=b.run==='门禁阻断'?'门禁阻断 · 等待处理':b.run==='待风险确认'?'存在风险 · 等待确认':verifyNow.spinning?'核验进行中':'批次尚未启动';
-    const preRunSub=b.run==='门禁阻断'?'启动门禁未通过，修复阻断项并重新核验后才能开始跑批。'
-      :b.run==='待风险确认'?'无阻断项，但存在需责任人确认的风险项，确认后才允许启动。'
-      :verifyNow.spinning?'正在核验切片与 Manifest，完成后给出启动结论。'
-      :'核验通过后按计划时间启动；启动后展示执行总结与批次关键信息。';
+    const preRunHead='批次尚未启动';
+    const preRunSub='核验完成后按计划时间启动。';
     const reasonHtml=(blockChecks.concat(warnChecks)).length
       ? blockChecks.map(c=>'<div class="bd-reason"><b>阻断</b><span>'+c.name+'：'+c.observed+'（阈值 '+c.threshold+'）</span></div>').join('')
         + warnChecks.map(c=>'<div class="bd-reason warn"><b>待确认</b><span>'+c.name+'：'+c.observed+'</span></div>').join('')
       : '';
-    const waitBlock='<div class="bd-wait"><b>'+preRunHead+'</b><span>'+preRunSub+'</span></div>'+
-      '<div class="bd-sec bd-preinfo"><div class="bd-keyinfo-head">启动前核验</div><div class="bd-kv-grid">'+
-        kv('核验状态',verifyChip(b),'',true)+
-        kv('指定切片日期',b.expectedSliceDate||'—')+
-        kv('核验 24h 截止',(typeof verifyDeadlineOf==='function'?verifyDeadlineOf(b):'—'))+
-        kv('计划启动时间',b.requestedAt||'—')+
-        kv('批次人数',people?fmtCount(people)+' 人':'—')+
-        kv('触发方式',b.startMode==='scheduled'?'预约调度':'人工发起')+
-      '</div>'+reasonHtml+'</div>';
+    const waitBlock='<div class="bd-wait"><b>'+preRunHead+'</b><span>'+preRunSub+'</span></div>';
     /* 运行中：进度百分比 + 分片进度 + 开始时间（100% 终态仍不显示百分比） */
     const pctNow=Math.max(0,Math.min(100,p));
     const liveBlock='<div class="bd-exec-metrics solo">'+live+'</div>'+
@@ -5152,7 +5141,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       '<div class="bd-progress-bar"><i id="bdProgBar" style="width:'+pctNow.toFixed(1)+'%"></i></div>'+
       '<div class="bd-progress-meta"><span>分片进度 <b id="bdProgShard">'+fmtCount(plan.completed)+' / '+fmtCount(shards)+' 分片</b></span><span>开始时间 <b>'+(b.startedAt||b.requestedAt||'—')+'</b></span></div></div>';
     const right=preRunView?waitBlock:(showResults?'<div class="bd-exec-metrics trio">'+summary+'</div>':liveBlock);
-    const kicker=preRunView?'启动前核验':(showResults?'执行总结':'执行进度');
+    const kicker=preRunView?'':(showResults?'执行总结':'执行进度');
     const keyInfo = !showResults ? '' :
       '<div class="bd-sec bd-keyinfo">'+
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
