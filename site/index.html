@@ -1481,6 +1481,7 @@
 .bd-exec-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-left:1px solid #EDF0F5;padding-left:26px;}
 .bd-exec-metrics.solo{grid-template-columns:200px;}
 .bd-metric{padding:2px 16px;border-right:1px solid #EDF0F5;}
+.verify-chip .spin{animation-iteration-count:3!important;}
 .bd-metric b .bd-unit{display:inline;font-size:11.5px;font-weight:500;margin-left:4px;color:#96A2B4;}
 .bd-metric:first-child{padding-left:0;}
 .bd-metric:last-child{border-right:0;}
@@ -3112,7 +3113,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     }
     function verifyChip(b){
       const v=verifyInfoOf(b);
-      return '<span class="badge '+v.cls+(v.spinning?' no-dot':'')+'" title="'+v.title+'">'+(v.spinning?'<i class="spin"></i>':'')+v.label+'</span>';
+      return '<span class="badge verify-chip '+v.cls+(v.spinning?' no-dot':'')+'" title="'+v.title+'">'+(v.spinning?'<i class="spin"></i>':'')+v.label+'</span>';
     }
     function manifestResultBadge(result) {
       const map={PASS:['通过','green'],WARN:['风险','amber'],BLOCK:['阻断','red'],PENDING:['待核验','gray'],UNKNOWN:['未知','gray'],WAIVED:['已例外','violet']};
