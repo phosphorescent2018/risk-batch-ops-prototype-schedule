@@ -2638,7 +2638,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
       { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', startedAt:'2026-05-24 21:35', endedAt:'2026-05-25 05:10', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
       { id:'B20260331001', opco:'MTN Uganda', businessDate:'2026-03-31', expectedSliceDate:'2026-03-29', requestedAt:'2026-03-31 22:00', sliceAt:'2026-03-29 21:50', compareBatch:'B20260228001', startMode:'scheduled', run:'待风险确认', runClass:'amber', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,060' },
-      { id:'B20260324001', allowRiskStart:true, opco:'MTN Uganda', businessDate:'2026-03-24', expectedSliceDate:'2026-03-22', requestedAt:'2026-03-24 22:00', sliceAt:'待核验 · 指定 2026-03-22', compareBatch:'B20260224001', startMode:'scheduled', run:'门禁阻断', runClass:'red', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--' }
+      { id:'B20260324001', allowRiskStart:true, opco:'MTN Uganda', businessDate:'2026-03-24', expectedSliceDate:'2026-03-22', requestedAt:'2026-03-24 22:00', sliceAt:'待核验 · 指定 2026-03-22', compareBatch:'B20260224001', startMode:'scheduled', run:'门禁阻断', runClass:'red', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--' },
+      { id:'B20260415001', targetSystems:['lms'], opco:'MTN Uganda', businessDate:'2026-04-15', expectedSliceDate:'2026-04-13', requestedAt:'2026-04-15 22:10', sliceAt:'2026-04-13 21:50', startedAt:'2026-04-15 22:15', endedAt:'2026-04-15 23:02', compareBatch:'B20260324001', run:'失败', runClass:'red', progress:38, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'24,600', failReason:'调度器心跳丢失超过阈值，批次中断，已完成分片保留' },
+      { id:'B20260410001', targetSystems:['digiops'], opco:'MTN Uganda', businessDate:'2026-04-10', expectedSliceDate:'2026-04-08', requestedAt:'2026-04-10 22:00', sliceAt:'2026-04-08 21:45', startedAt:'2026-04-10 22:06', endedAt:'2026-04-10 22:41', compareBatch:'B20260324001', run:'已终止', runClass:'gray', progress:22, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'24,380', failReason:'本次跑批已被人工终止，未完成分片不再调度' },
     ];
 
     const batchTaskMap={B20260627001:'TRF_101',B20260626001:'TRF_102',B20260623001:'TRF_201',B20260622001:'TRF_301',B20260625001:'TRF_102',B20260624001:'TRF_101',B20260524001:'TRF_102',B20260424001:'TRF_102',B20260331001:'TRF_301',B20260324001:'TRF_301'};
@@ -5072,7 +5074,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       '<div class="bd-progress-meta"><span>分片进度 <b id="bdProgShard">'+fmtCount(plan.completed)+' / '+fmtCount(shards)+' 分片</b></span><span>开始时间 <b>'+(b.startedAt||b.requestedAt||'—')+'</b></span></div></div>';
     const right=preRunView?waitBlock:(showResults?'<div class="bd-exec-metrics trio">'+summary+'</div>':liveBlock);
     const kicker=preRunView?'启动前核验':(showResults?'执行总结':'执行进度');
-    const abnormalText=b.run==='待修复'?failShards+' 个分片最终失败，已完成分片保留，可一键修复':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
+    const abnormalText=b.failReason||(b.run==='待修复'?failShards+' 个分片最终失败，已完成分片保留，可一键修复':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告')));
+    const alertBar=(fin&&b.failReason)?'<div class="bd-sec" style="margin-top:0;padding:11px 16px;border-radius:10px;font-size:12.5px;line-height:1.6;'+(b.run==='失败'?'background:#FDEEEE;border:1px solid #F5CFCB;color:#C0392B;':(b.run==='待修复'?'background:#FEF6E7;border:1px solid #F3DCA8;color:#9A6A00;':'background:#F1F4F8;border:1px solid #DDE3EA;color:#4A5A70;'))+'">'+b.failReason+'</div>':'';
     const keyInfo = !showResults ? '' :
       '<div class="bd-sec bd-keyinfo">'+
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
@@ -5139,7 +5142,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         right+
       '</div>'+
       repairBlock+
-      keyInfo+
+      keyInfo+alertBar+
       lowerBlock;
   }
 
