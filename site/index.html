@@ -1532,7 +1532,9 @@
 .bd-repair-note{font-size:12px;color:#96A2B4;}
 .bd-btn.loading{opacity:.8;cursor:default;}
 .bd-kv-val{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
-.bd-btn-xs{height:20px;padding:0 8px;font-size:10.5px;border-radius:6px;line-height:18px;}
+.bd-btn-xs{height:22px;padding:0 10px;font-size:11.5px;border-radius:6px;line-height:20px;}
+.bd-btn-ghost{background:#fff;border:1px solid #D8E0EA;color:#2458C5;font-weight:500;}
+.bd-btn-ghost:hover{background:#F4F8FF;border-color:#C9DCFF;color:#1B47A8;}
 .bd-btn-xs i.spin{width:10px;height:10px;}
 .bd-kv b .badge{font-size:11px;font-weight:600;}
 </style>
@@ -5109,7 +5111,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const metric=(label,val)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b></div>';
     /* 失败分片行内修复入口：只有「待修复 + 失败分片>0」才出现，全页唯一修复入口 */
     const repairInline = (b.run==='待修复' && failShards>0)
-      ? '<button class="bd-btn primary bd-btn-xs'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'修复失败分片')+'</button>'
+      ? '<button class="bd-btn bd-btn-ghost bd-btn-xs'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'修复分片')+'</button>'
       : '';
     /* 分片口径：待修复 → 成功 X / 失败 Y（X+Y=总数）；失败 / 已终止 → 已完成 X / 未完成 Y */
     const shardKvLine = b.run==='待修复'
