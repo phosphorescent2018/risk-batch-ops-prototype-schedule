@@ -2653,6 +2653,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
 
     const batchTaskMap={B20260627001:'TRF_101',B20260626001:'TRF_102',B20260623001:'TRF_201',B20260622001:'TRF_301',B20260625001:'TRF_102',B20260624001:'TRF_101',B20260524001:'TRF_102',B20260424001:'TRF_102',B20260331001:'TRF_301',B20260324001:'TRF_301'};
     batches.forEach(b=>{ if(!b.taskId) b.taskId=batchTaskMap[b.id]||'TRF_101'; });
+    /* Batch Name 唯一：Task 名 · 业务日期(MM-DD)，避免多批次重名 */
+    batches.forEach(b=>{ if(!b.batchName){ const t=(typeof tasks!=='undefined'?tasks.find(x=>x.id===b.taskId):null); const nm=t&&t.name?t.name:''; const md=(b.businessDate||'').slice(5); b.batchName=nm&&md?(nm+' · '+md):(nm||b.id); } });
     batches.forEach(b=>{ if(!b.groupId){ const t=(typeof tasks!=='undefined'?tasks.find(x=>x.id===b.taskId):null); const ds=t&&t.dataScope?String(t.dataScope).split(' · ')[0]:''; b.groupId=ds||'limitIncreaseGroupV1'; } });
 
     /* ---------- 批次派生口径：分片 / 平均速度 / 时间线（唯一来源，列表与详情共用） ---------- */
