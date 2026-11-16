@@ -1545,7 +1545,7 @@
 .bd-statebar.info{background:#F2F6FF;color:#2458C5;}
 .bd-statebar.bad{background:#FFF0F1;color:#B42318;}
 </style>
-<style id="bdNotifyStyle">.bd-lower{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+<style id="bdNotifyStyle">.bd-lower{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:26px;}
 .bd-lower>*{min-width:0;}
 .bd-lower>div+div{border-left:1px solid #EDF0F5;padding-left:26px;}
 .bd-lower .bd-report-body{max-width:100%;}
@@ -2713,6 +2713,13 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       return {value:(v/10000).toFixed(2),unit:'万人 / 小时'};
     }
     function speedParts(b){ return speedUnitParts(avgSpeed(b)); }
+    /* 时间精确到秒：补齐秒位（确定性，不随刷新变化） */
+    function tsWithSec(ts){
+      if(!ts||ts==='—') return '—';
+      if(!/^\d{4}-\d\d-\d\d \d\d:\d\d$/.test(ts)) return ts;
+      let n=0; for(const ch of ts) n=(n*31+ch.charCodeAt(0))%60;
+      return ts+':'+String(n).padStart(2,'0');
+    }
     /* 核验 24h 截止：与 verifyInfoOf 同一套起点（verifyStartedAt → sliceAt → requestedAt） */
     function verifyDeadlineOf(b){
       const bs=(typeof batchStates!=='undefined'&&batchStates[b&&b.id])||{};
@@ -5141,7 +5148,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const liveBlock='<div class="bd-exec-metrics solo">'+live+'</div>'+
       '<div class="bd-progress"><div class="bd-progress-head"><span>当前进度</span><b id="bdProgVal">'+pctNow.toFixed(1)+'%</b></div>'+
       '<div class="bd-progress-bar"><i id="bdProgBar" style="width:'+pctNow.toFixed(1)+'%"></i></div>'+
-      '<div class="bd-progress-meta"><span>分片进度 <b id="bdProgShard">'+fmtCount(plan.completed)+' / '+fmtCount(shards)+' 分片</b></span><span>开始时间 <b>'+(b.startedAt||b.requestedAt||'—')+'</b></span></div></div>';
+      '<div class="bd-progress-meta"><span>开始时间 <b>'+(b.startedAt||b.requestedAt||'—')+'</b></span></div></div>';
     const right=preRunView?waitBlock:(showResults?'<div class="bd-exec-metrics trio">'+summary+'</div>':liveBlock);
     const kicker=preRunView?'':(showResults?'执行总结':'执行进度');
     const keyInfo = !showResults ? '' :
@@ -5264,7 +5271,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const idEl=el('bdId'); if(idEl){ idEl.textContent=b.id; idEl.setAttribute('title',b.id); }
     {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','待修复':'amber','已终止':'gray'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
-    el('bdMeta').innerHTML='<span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+((b.people&&b.people!=='--')?b.people:'—')+' 人</span>';
+    el('bdMeta').innerHTML='<span>跑批创建时间 '+tsWithSec(b.requestedAt)+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+((b.people&&b.people!=='--')?b.people:'—')+' 人</span>';
     {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','待修复':'amber','已终止':'gray'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
     const finalNow=['已完成','待修复','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
