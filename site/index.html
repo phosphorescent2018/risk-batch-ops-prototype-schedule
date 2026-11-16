@@ -1471,17 +1471,10 @@
 #tipFloat.show{opacity:1;}
 .bl-ic.rep-done{background:#EEF4FF;border-color:#C9DCFF;color:#2458C5;}
 </style>
-<style id="reportSceneStyle">body:has(#taskReportScene option[value="无报告"]:checked) #taskReportGenField,
-body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{display:none;}
-</style>
+
 <style id="bdExecStyle">.bd-exec{padding-bottom:2px;}
-.bd-exec-top{display:grid;grid-template-columns:minmax(210px,.85fr) 1.7fr;gap:34px;align-items:center;padding:4px 0 20px;}
+.bd-exec-top{display:block;padding:4px 0 12px;}
 .bd-exec-kicker{font-size:10px;letter-spacing:.14em;color:#96A2B4;font-weight:600;}
-.bd-exec-big{display:flex;align-items:baseline;gap:12px;margin:10px 0 14px;}
-.bd-exec-big b{font-size:50px;line-height:1;font-weight:700;letter-spacing:-.045em;color:#0F172A;font-variant-numeric:tabular-nums;}
-.bd-exec-big span{font-size:11px;color:#5A6A80;padding:3px 9px;border:1px solid #E6EBF2;border-radius:99px;background:#FAFBFD;}
-.bd-exec-bar{height:6px;border-radius:99px;background:#EEF2F8;overflow:hidden;}
-.bd-exec-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#2F6BFF,#6A97F6);transition:width .1s linear;}
 .bd-exec-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-left:1px solid #EDF0F5;padding-left:26px;}
 .bd-exec-metrics.solo{grid-template-columns:200px;}
 .bd-metric{padding:2px 16px;border-right:1px solid #EDF0F5;}
@@ -1495,7 +1488,6 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-report-only .bd-report-head{margin-bottom:14px;}
 </style>
 <style id="bdExecTypeScale">.bd-exec-kicker{font-size:13px;letter-spacing:.1em;}
-.bd-exec-big span{font-size:12px;}
 .bd-exec-metrics .bd-metric span{font-size:13px;letter-spacing:.02em;margin-bottom:12px;}
 .bd-exec-metrics .bd-metric b{font-size:32px;}
 .bd-exec-metrics .bd-metric i{font-size:13px;margin-top:8px;}
@@ -1511,7 +1503,32 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .bd-kv b{font-size:13.5px;font-weight:650;color:#0F172A;font-variant-numeric:tabular-nums;text-align:right;}
 .bd-kv b.ok{color:#0F9F7A;}
 .bd-kv b.bad{color:#D64545;}
+.bd-kv b.warn{color:#9A5B00;}
 @media(max-width:900px){.bd-kv-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+</style>
+<style id="statusRuleStyle">.spin{display:inline-block;width:12px;height:12px;border:1.8px solid currentColor;border-right-color:transparent;border-radius:50%;animation:spinRot .75s linear infinite;vertical-align:-2px;}
+.bl-ic .spin{width:13px;height:13px;border-width:2px;}
+.badge .spin{width:9px;height:9px;border-width:1.6px;margin-right:5px;vertical-align:0;}
+@keyframes spinRot{to{transform:rotate(360deg)}}
+.bl-ic.rep-fail{background:#FDEEEE;border-color:#F5CFCB;color:#C0392B;}
+.bl-ic.rep-fail:hover{background:#FBE0E0;border-color:#EFB9B4;color:#A93226;}
+.bl-ic.rep-busy{background:#F4F8FF;border-color:#DBE7FB;color:#2458C5;cursor:default;}
+.bl-ic.rep-busy:hover{background:#EAF2FF;border-color:#C9DCFF;color:#2458C5;}
+.bd-exec .bd-wait{border-left:0;padding-left:0;margin-top:12px;}
+.bd-exec-metrics.trio{grid-template-columns:repeat(3,minmax(0,1fr));border-left:0;padding-left:0;margin-top:14px;}
+.bd-exec-metrics.solo{grid-template-columns:220px;border-left:0;padding-left:0;margin-top:14px;}
+.bd-rep-ic{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;color:#5A6A80;margin-right:2px;}
+.bd-rep-ic .icon{width:14px;height:14px;}
+.bd-rep-ic .rep-ic-fail{color:#C0392B;}
+.bd-rep-ic .rep-ic-spin{color:#2458C5;}
+.bd-repair{display:flex;align-items:center;gap:16px;margin:14px 0 0;padding:11px 14px;border:1px solid #F3DFB4;background:#FFFBF3;border-radius:10px;}
+.bd-repair-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.bd-repair-txt b{font-size:12.5px;font-weight:650;color:#9A5B00;}
+.bd-repair-txt span{font-size:11.5px;color:#A98A5A;}
+.bd-repair .bd-btn{height:32px;padding:0 16px;flex:0 0 auto;}
+.bd-repair-note{font-size:12px;color:#96A2B4;}
+.bd-btn.loading{opacity:.8;cursor:default;}
+.bd-kv b .badge{font-size:11px;font-weight:600;}
 </style>
 <style id="bdStateStyle">.bd-wait{display:flex;flex-direction:column;gap:9px;padding-left:26px;border-left:1px solid #EDF0F5;}
 .bd-wait b{font-size:20px;font-weight:650;color:#0F172A;}
@@ -1560,6 +1577,8 @@ body:has(#dtReportScene option[value="无报告"]:checked) #dtReportGenField{dis
 .td-modal .form-field .input,.td-modal .form-field .select{height:36px;}
 .td-modal .form-field textarea{min-height:64px;}
 .td-modal .modal-foot{padding:14px 24px;}
+</style>
+<style id="blCellSubKeep">.bl-table .cell-sub{font-size:9.5px;color:var(--ink-400);margin-top:2px;}
 </style>
 <style id="bdNotifyStatic">.bd-notify-static{border:1px solid #dce7f4;background:#f7fbff;border-radius:10px;padding:12px 14px;}
 .bd-notify-static-t{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:650;color:#33415C;}
@@ -1718,7 +1737,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <div class="breadcrumbs" id="breadcrumbs"><span>跑批中心</span><span class="sep">/</span><strong>任务模板</strong></div>
         <div class="topbar-spacer"></div>
         <span class="demo-badge">DE 生产</span>
-        <div class="top-pill"><span class="dot"></span><span>中国时间 · 06:42</span></div>
+        <div class="top-pill" title="乌干达当地时间（EAT, UTC+3）"><span class="dot"></span><span id="topClock">EAT --:--</span></div>
         <div class="top-avatar">HT</div>
       </header>
 
@@ -1738,7 +1757,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             <div class="search-wrap"><svg class="icon icon-sm"><use href="#i-search"/></svg><input class="input" id="taskSearch" type="search" placeholder="搜索任务名称 / Task ID" aria-label="搜索任务"></div>
             <select class="select" id="taskFilterStrategy" aria-label="策略"><option value="">全部策略</option></select>
             <select class="select" id="taskFilterVersionType" aria-label="版本类型"><option value="">全部版本类型</option><option>正式</option><option>测试</option></select>
-            <select class="select" id="taskFilterReportScene" aria-label="报告场景"><option value="">全部报告场景</option><option>贷前</option><option>贷中</option><option>无报告</option></select>
+            <select class="select" id="taskFilterReportScene" aria-label="报告场景"><option value="">全部报告场景</option><option>贷前</option><option>贷中</option></select>
             <div class="col-picker">
               <button class="btn btn-sm" id="taskColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button>
               <div class="col-panel hidden" id="taskColPanel"></div>
@@ -2025,6 +2044,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             
             <option value="成功">成功</option>
             <option value="失败">失败</option>
+            <option value="待修复">待修复</option>
             <option value="已终止">已终止</option>
           </select>
           <div class="col-picker"><button class="btn btn-sm" id="batchColBtn" type="button"><svg class="icon icon-sm"><use href="#i-sliders"/></svg>列设置</button><div class="col-panel hidden" id="batchColPanel"></div></div>
@@ -2249,7 +2269,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           
           <div class="form-section">
             <div class="section-title-row"><div><h3>报告配置</h3><p>选择本 Task 默认生成的业务报告。</p></div></div>
-            <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
+            <div class="form-field"><label>报告场景 <span class="req">*</span></label><select class="select" id="taskReportScene" title="报告场景仅支持贷前 / 贷中"><option value="贷前">贷前</option><option value="贷中">贷中</option></select></div>
             <div class="form-field" id="taskReportGenField"><label>报告生成 <span class="req">*</span></label><select class="select" id="taskReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div>
           <div class="form-section" style="display:none">
@@ -2430,7 +2450,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <div class="mini-target"><div class="mini-target-name"><span class="target-mark" style="background:var(--teal-100);color:var(--teal-700)">D</span>DigiOps</div><span class="badge gray" id="pushDigiStatus">待推送</span></div>
         </div>
         <div class="form-section" id="pushFailureSection" style="display:none">
-          <div class="section-title-row"><div><h3>部分失败明细</h3><p>查看失败原因、出站记录和重试入口。</p></div><span class="badge amber" id="pushFailureBadge">118 条失败</span></div>
+          <div class="section-title-row"><div><h3>推送失败明细</h3><p>查看失败原因、出站记录和重试入口。</p></div><span class="badge amber" id="pushFailureBadge">118 条失败</span></div>
           <div class="summary-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px">
             <div class="summary-item"><span>已发送</span><strong>8,214</strong></div>
             <div class="summary-item"><span>已接收</span><strong>8,214</strong></div>
@@ -2488,7 +2508,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <div class="card td-card">
             <div class="card-head"><div><h2>报告配置</h2></div></div>
             <div class="card-body"><div class="form-grid">
-              <div class="form-field"><label>报告场景</label><select class="select" id="dtReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option><option value="无报告">无报告</option></select></div>
+              <div class="form-field"><label>报告场景</label><select class="select" id="dtReportScene"><option value="贷前">贷前</option><option value="贷中">贷中</option></select></div>
               <div class="form-field" id="dtReportGenField"><label>报告生成</label><select class="select" id="dtReportGen"><option>自动生成</option><option>手动生成</option></select></div>
             </div></div>
           </div>
@@ -2610,12 +2630,12 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const batches = [
       { id:'B20260627001', opco:'MTN Uganda', businessDate:'2026-06-27', expectedSliceDate:'2026-06-25', requestedAt:'2026-06-27 22:00', sliceAt:'2026-06-25 21:50', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,180' },
       { id:'B20260622001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-22', expectedSliceDate:'2026-06-20', requestedAt:'2026-06-22 22:00', sliceAt:'2026-06-20 21:50', compareBatch:'B20260524001', run:'待启动', runClass:'gray', progress:0, review:'核验通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,110' },
-      { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, endedAt:'2026-06-24 06:40', review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
-      { id:'B20260424001', opco:'MTN Uganda', businessDate:'2026-04-24', expectedSliceDate:'2026-04-22', requestedAt:'2026-04-24 22:15', sliceAt:'2026-04-22 22:00', compareBatch:'B20260324001', run:'部分失败', runClass:'amber', progress:96, review:'已完成', reviewClass:'green', downstream:'部分失败', downstreamClass:'red', report:'3 / 4', reportClass:'amber', people:'23,980' },
+      { id:'B20260623001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-23', expectedSliceDate:'2026-06-21', requestedAt:'2026-06-23 22:00', sliceAt:'2026-06-21 21:50', startedAt:'2026-06-23 22:05', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, endedAt:'2026-06-24 06:40', review:'已应用干预', reviewClass:'violet', downstream:'待发布', downstreamClass:'amber', report:'2 / 4', reportClass:'amber', people:'24,980' },
+      { id:'B20260424001', opco:'MTN Uganda', businessDate:'2026-04-24', expectedSliceDate:'2026-04-22', requestedAt:'2026-04-24 22:15', sliceAt:'2026-04-22 22:00', startedAt:'2026-04-24 22:20', endedAt:'2026-04-25 04:35', compareBatch:'B20260324001', run:'待修复', runClass:'amber', progress:96, review:'已完成', reviewClass:'green', downstream:'部分失败', downstreamClass:'amber', report:'3 / 4', reportClass:'amber', people:'23,980' },
       { id:'B20260625001', opco:'MTN Uganda', businessDate:'2026-06-25', expectedSliceDate:'2026-06-23', requestedAt:'2026-06-25 00:10', sliceAt:'2026-06-23 21:50', compareBatch:'B20260624001', run:'运行中', runClass:'blue', progress:64, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,120' },
       { id:'B20260626001', opco:'MTN Uganda', businessDate:'2026-06-26', expectedSliceDate:'2026-06-24', requestedAt:'2026-06-26 22:00', sliceAt:'2026-06-24 21:55', compareBatch:'B20260524001', startMode:'scheduled', run:'待启动', runClass:'gray', progress:0, review:'检查通过', reviewClass:'green', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,160' },
-      { id:'B20260624001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-24', expectedSliceDate:'2026-06-22', requestedAt:'2026-06-24 22:00', sliceAt:'2026-06-22 21:50', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'待提交包', reviewClass:'amber', downstream:'待发布', downstreamClass:'gray', report:'2 / 4', reportClass:'amber', people:'25,000' },
-      { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
+      { id:'B20260624001', targetSystems:['lms','digiops'], opco:'MTN Uganda', businessDate:'2026-06-24', expectedSliceDate:'2026-06-22', requestedAt:'2026-06-24 22:00', sliceAt:'2026-06-22 21:50', startedAt:'2026-06-24 22:05', endedAt:'2026-06-25 05:20', compareBatch:'B20260524001', run:'已完成', runClass:'green', progress:100, review:'待提交包', reviewClass:'amber', downstream:'待发布', downstreamClass:'gray', report:'2 / 4', reportClass:'amber', people:'25,000' },
+      { id:'B20260524001', opco:'MTN Uganda', businessDate:'2026-05-24', expectedSliceDate:'2026-05-22', requestedAt:'2026-05-24 21:30', sliceAt:'2026-05-22 21:20', startedAt:'2026-05-24 21:35', endedAt:'2026-05-25 05:10', compareBatch:'B20260424001', run:'已完成', runClass:'green', progress:100, review:'已完成', reviewClass:'green', downstream:'已对账', downstreamClass:'green', report:'4 / 4', reportClass:'green', people:'24,720' },
       { id:'B20260331001', opco:'MTN Uganda', businessDate:'2026-03-31', expectedSliceDate:'2026-03-29', requestedAt:'2026-03-31 22:00', sliceAt:'2026-03-29 21:50', compareBatch:'B20260228001', startMode:'scheduled', run:'待风险确认', runClass:'amber', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'25,060' },
       { id:'B20260324001', allowRiskStart:true, opco:'MTN Uganda', businessDate:'2026-03-24', expectedSliceDate:'2026-03-22', requestedAt:'2026-03-24 22:00', sliceAt:'待核验 · 指定 2026-03-22', compareBatch:'B20260224001', startMode:'scheduled', run:'门禁阻断', runClass:'red', progress:0, review:'未开始', reviewClass:'gray', downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--' }
     ];
@@ -2724,16 +2744,16 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     };
 
     const batchStates = {
-      B20260627001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
-      B20260626001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
-      B20260623001: { interventionApplied:true, packageValidated:true, reportGenerated:false, published:false, pushStatus:'pending' },
-      B20260622001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending', batchCheckpoint:{completed:6327,total:9887,at:'2026-06-23 01:28'}, shards:{completed:6327,running:0,failed:0,retried:0} },
-      B20260625001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending', shards:{completed:9, running:5, failed:1, retried:0} },
-      B20260624001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
-      B20260524001: { interventionApplied:true, packageValidated:true, reportGenerated:true, published:true, pushStatus:'success' },
-      B20260424001: { interventionApplied:true, packageValidated:true, reportGenerated:true, published:true, pushStatus:'partial' },
-      B20260331001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'pending' },
-      B20260324001: { interventionApplied:false, packageValidated:false, reportGenerated:false, published:false, pushStatus:'blocked' }
+      B20260627001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', verifyStatus:'checking', verifyStartedAt:'2026-06-27 21:40' },
+      B20260626001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', verifyStatus:'pending', verifyStartedAt:'2026-06-26 20:40' },
+      B20260623001: { interventionApplied:true, packageValidated:true, reportGenerated:false, reportStatus:'failed', published:false, pushStatus:'pending' },
+      B20260622001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', batchCheckpoint:{completed:6327,total:9887,at:'2026-06-23 01:28'}, shards:{completed:6327,running:0,failed:0,retried:0} },
+      B20260625001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', shards:{completed:9, running:5, failed:1, retried:0} },
+      B20260624001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending' },
+      B20260524001: { interventionApplied:true, packageValidated:true, reportGenerated:true, reportStatus:'success', published:true, pushStatus:'success' },
+      B20260424001: { interventionApplied:true, packageValidated:true, reportGenerated:true, reportStatus:'success', published:true, pushStatus:'partial' },
+      B20260331001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'pending', verifyStatus:'pending', verifyStartedAt:'2026-03-29 21:50' },
+      B20260324001: { interventionApplied:false, packageValidated:false, reportGenerated:false, reportStatus:'idle', published:false, pushStatus:'blocked' }
     };
 
     let currentHealthEvidence=null;
@@ -2935,7 +2955,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function getManifest(id) {
       if (!manifestStates[id]) {
         const b = batches.find(x => x.id === id);
-        const completed = b && (b.run === '已完成' || b.run === '部分失败');
+        const completed = b && (b.run === '已完成' || b.run === '待修复');
         const isNew = !!(b && b.isNew);
         const failedCheck = id === 'B20260622001';
         manifestStates[id] = {
@@ -2959,6 +2979,39 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function currentManifest() { return getManifest(state.currentBatchId); }
     function manifestCounts(m=currentManifest()) {
       return m.checks.reduce((a,c) => { a[c.result]=(a[c.result]||0)+1; return a; }, {});
+    }
+    const VERIFY_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+    function parseTs(v){ if(!v) return NaN; const d=new Date(String(v).replace(' ','T')); return isNaN(d.getTime())?NaN:d.getTime(); }
+    /* 批次级核验状态：待核验 / 核验中 / 核验通过 / 核验失败；待核验、核验中超过 24 小时自动判失败 */
+    function verifyInfoOf(b){
+      if(!b) return {key:'pending', label:'待核验', cls:'gray', title:'等待核验', spinning:false, timedOut:false};
+      const bs=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
+      const m=getManifest(b.id), mc=manifestCounts(m);
+      let key=bs.verifyStatus;
+      if(!key){
+        if(m.status==='FAILED'||(mc.BLOCK||0)>0||(mc.WARN||0)>0) key='failed';
+        else if(m.status==='CHECKING') key='checking';
+        else if((mc.PENDING||0)>0||m.status==='WAITING_CHECK') key='pending';
+        else key='passed';
+      }
+      const MAP={pending:['待核验','gray'],checking:['核验中','blue'],passed:['核验通过','green'],failed:['核验失败','red']};
+      let pair=MAP[key]||MAP.pending, label=pair[0], cls=pair[1], timedOut=false, title=label;
+      if(key==='pending'||key==='checking'){
+        const since=parseTs(bs.verifyStartedAt||b.sliceAt||b.requestedAt);
+        const nowRef=parseTs(b.endedAt||b.startedAt||b.requestedAt||b.businessDate);
+        if(!isNaN(since)&&!isNaN(nowRef)&&(nowRef-since)>=VERIFY_TIMEOUT_MS){
+          timedOut=true; label='核验失败'; cls='red'; title='超过 24 小时切片未完成，自动判定失败';
+        }else{
+          title=key==='checking'?'核验进行中':'等待核验 · 超过 24 小时切片未完成将自动判定失败';
+        }
+      }else if(key==='failed'){
+        title='核验失败，请查看核验清单中的失败项';
+      }
+      return {key:timedOut?'failed':key, label:label, cls:cls, title:title, spinning:(!timedOut&&key==='checking'), timedOut:timedOut};
+    }
+    function verifyChip(b){
+      const v=verifyInfoOf(b);
+      return '<span class="badge '+v.cls+(v.spinning?' no-dot':'')+'" title="'+v.title+'">'+(v.spinning?'<i class="spin"></i>':'')+v.label+'</span>';
     }
     function manifestResultBadge(result) {
       const map={PASS:['通过','green'],WARN:['风险','amber'],BLOCK:['阻断','red'],PENDING:['待核验','gray'],UNKNOWN:['未知','gray'],WAIVED:['已例外','violet']};
@@ -3007,16 +3060,16 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function manifestPhaseState(b,m,counts) {
       const block=counts.BLOCK||0, warn=counts.WARN||0, pending=counts.PENDING||0;
       const runStarted=!isPreRunBatch(b);
-      const runFinished=b?.run==='已完成'||b?.run==='部分失败';
+      const runFinished=b?.run==='已完成'||b?.run==='待修复';
       return {
         pre: block?['阻断','red']:warn?['有提示','amber']:pending?['待核验','gray']:['已通过','green'],
         run: runStarted&&!runFinished?['运行中','amber']:runFinished?['已结束','green']:['未开始','gray'],
-        post: runFinished?(b?.run==='部分失败'?['需处理','amber']:['已结束','green']):runStarted?['待结束','gray']:['未开始','gray']
+        post: runFinished?(b?.run==='待修复'?['需处理','amber']:['已结束','green']):runStarted?['待结束','gray']:['未开始','gray']
       };
     }
     function getShardSummary(b){
       const total=9887;
-      if(b?.run==='部分失败') return {total,completed:9876,running:0,queued:0,retrying:0,retried:11,manual:11,permanent:11};
+      if(b?.run==='待修复') return {total,completed:9876,running:0,queued:0,retrying:0,retried:11,manual:11,permanent:11};
       if(b?.run==='已完成') return {total,completed:total,running:0,queued:0,retrying:0,retried:11,manual:0,permanent:0};
       if(b?.run==='运行中') return {total,completed:6327,running:8,queued:3541,retrying:10,retried:11,manual:1,permanent:1};
       return {total,completed:0,running:0,queued:0,retrying:0,retried:0,manual:0,permanent:0};
@@ -3026,7 +3079,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(finished){
         return `<div class="exception-row retry"><code>自动恢复</code><div><strong>11 个分片已由系统自动重试恢复</strong><span>重试原因：网络超时 8 片 · Doris I/O 2 片 · 临时锁等待 1 片</span></div><span class="badge green">无需人工</span><div class="exception-actions"><button class="btn btn-sm" data-tab="shard">查看运行详情</button></div></div>`;
       }
-      const partial=b?.run==='部分失败';
+      const partial=b?.run==='待修复';
       return `<div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>网络 / I/O 异常 · 8 个分片</strong><span>${partial?'已重试 3/3 次，仍失败':'正在自动重试 2/3 · 下一次 30 秒后'}</span></div><span class="badge ${partial?'red':'amber'}">${partial?'P1 · 需人工':'自动重试中'}</span><div class="exception-actions">${partial?`<button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败片</button>`:'<button class="btn btn-sm" disabled>等待重试</button>'}</div></div><div class="exception-row retry"><code>AUTO-RETRY</code><div><strong>Doris 临时资源异常 · 2 个分片</strong><span>正在自动重试 1/3</span></div><span class="badge amber">自动重试中</span><div class="exception-actions"><button class="btn btn-sm" disabled>无需操作</button></div></div><div class="exception-row error"><code>MANUAL</code><div><strong>Schema / 分区异常 · 1 个分片</strong><span>错误类型不可自动恢复 · 重试 3/3 已耗尽 · 已触发 P0 预警</span></div><span class="badge red">P0 · 强干预</span><div class="exception-actions"><button class="btn btn-sm danger" data-retry-shard="${b.id}">重试该分片</button><button class="btn btn-sm">查看日志</button></div></div>`;
     }
     function renderManifestRunPanel(b) {
@@ -3037,7 +3090,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         return;
       }
       const s=getShardSummary(b);
-      const partial=b.run==='部分失败';
+      const partial=b.run==='待修复';
       const finished=b.run==='已完成';
       const resourceRows=finished?`<div class="evidence-row"><span>Doris 资源</span><strong style="color:var(--teal-700)">已恢复</strong></div><div class="evidence-row"><span>服务依赖</span><strong>2 / 2 可用</strong></div>`:`<div class="evidence-row"><span>Doris BE</span><strong style="color:var(--red-700)">2 / 3 可用</strong></div><div class="evidence-row"><span>Doris I/O</span><strong style="color:var(--red-700)">92%</strong></div><div class="evidence-row"><span>查询延迟 P95</span><strong>9.8s</strong></div>`;
       panel.innerHTML=`
@@ -3049,14 +3102,14 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <div class="shard-overview-card"><span>待人工处理</span><strong style="color:${s.manual?'var(--red-700)':'var(--teal-700)'}">${s.manual}</strong><small>${s.manual?'已触发告警':'当前无异常'}</small></div>
         </div>
         <div class="manifest-run-grid">
-          <div class="card"><div class="card-head"><div><h2>异常分片与自动重试</h2><p>正常分片不逐片展示；只展示重试中、重试耗尽和待人工处理的异常。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'部分失败':finished?'已恢复':'自动重试中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>重试策略</strong><span>最多 3 次，指数退避；使用指数退避自动重试</span></div><div><strong>告警分级</strong><span>P1：局部重试耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前空闲容量，不预留固定资源；资源紧张时自动延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>其他分片继续运行：</strong>当前已完成 6,327、运行中 8、排队 3,541；其余 9,876 片未进入最终失败状态。局部失败不中断整批；资源不足时立即重试自动延后到跑后统一修复。</div>${partial?`<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>跑后存在 11 个失败分片：</strong>下游消费已阻断。可一键只重跑失败分片，不需要重跑全批。</div>`:''}</div></div>
+          <div class="card"><div class="card-head"><div><h2>异常分片与自动重试</h2><p>正常分片不逐片展示；只展示重试中、重试耗尽和待人工处理的异常。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'待修复':finished?'已恢复':'自动重试中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>重试策略</strong><span>最多 3 次，指数退避；使用指数退避自动重试</span></div><div><strong>告警分级</strong><span>P1：局部重试耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前空闲容量，不预留固定资源；资源紧张时自动延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>其他分片继续运行：</strong>当前已完成 6,327、运行中 8、排队 3,541；其余 9,876 片未进入最终失败状态。局部失败不中断整批；资源不足时立即重试自动延后到跑后统一修复。</div>${partial?`<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>跑后存在 11 个失败分片：</strong>下游消费已阻断。可一键只重跑失败分片，不需要重跑全批。</div>`:''}</div></div>
           <div class="card"><div class="card-head"><div><h2>资源与依赖</h2><p>只在影响分片连续性时告警。</p></div><span class="badge ${finished?'green':'amber'}">${finished?'已恢复':'需关注'}</span></div><div class="card-body"><div class="evidence-list">${resourceRows}</div></div></div>
         </div>`;
     }
     function renderManifestPostPanel(b){
       const el=$('#manifestPostContent'); if(!el) return;
       const s=getShardSummary(b);
-      if(!['已完成','部分失败','已停止','已终止'].includes(b.run)){el.innerHTML=`<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批结束后开放</strong>完成后检查结果完整性、失败分片、自动重试和消费门禁。</div></div></div>`;return;}
+      if(!['已完成','待修复','已停止','已终止'].includes(b.run)){el.innerHTML=`<div class="card"><div class="card-body"><div class="manifest-post-placeholder"><strong>跑批结束后开放</strong>完成后检查结果完整性、失败分片、自动重试和消费门禁。</div></div></div>`;return;}
       const blocked=s.permanent>0||b.run==='已停止';
       el.innerHTML=`<div class="shard-overview"><div class="shard-overview-card"><span>结果完整性</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'不完整':'完整'}</strong><small>${fmtCount(s.completed)} / ${fmtCount(s.total)} 分片完成</small></div><div class="shard-overview-card"><span>自动重试恢复</span><strong>${s.retried}</strong><small>正常运行无需人工</small></div><div class="shard-overview-card"><span>最终失败</span><strong style="color:${s.permanent?'var(--red-700)':'var(--teal-700)'}">${s.permanent}</strong><small>${s.permanent?'重试耗尽或不可恢复':'无失败分片'}</small></div><div class="shard-overview-card"><span>消费门禁</span><strong style="color:${blocked?'var(--red-700)':'var(--teal-700)'}">${blocked?'已阻断':'可消费'}</strong><small>${blocked?'请先处理失败分片':'结果完整，可进入处理'}</small></div></div><div class="card"><div class="card-head"><div><h2>跑后处理</h2><p>不展示全部 9,887 个分片，只展示阻断消费的失败项。</p></div><span class="badge ${blocked?'red':'green'}">${blocked?'需处理':'已通过'}</span></div><div class="card-body">${blocked?`<div class="decision-note" style="background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>${s.permanent} 个分片最终失败：</strong>可一键重试失败分片，不重开整批；如业务接受部分结果，需要走风险豁免后才能消费。</div><div class="evidence-action-bar"><button class="btn btn-sm danger" data-retry-shard="${b.id}">一键重试失败分片</button><button class="btn btn-sm">查看失败明细</button><button class="btn btn-sm">申请部分结果消费</button></div>`:'<div class="decision-note"><strong>结果完整：</strong>自动重试结果已计入最终结果，可以进入结果处理与消费。</div>'}</div></div>`; }
     function selectManifestPhase(phase='pre') {
@@ -3097,7 +3150,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       if(scanStrip){
         const total=m.checks.length, pass=counts.PASS||0, pending=counts.PENDING||0;
         let dot='',state='',copy='',riskBtn='';
-        if(['已完成','部分失败','运行中','已停止','已终止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
+        if(['已完成','待修复','运行中','已停止','已终止'].includes(b.run)){dot='green';state='扫描完成';copy=`最终检查 ${pass}/${total} 通过；运行阶段使用冻结的 Manifest 结果。`;}
         else if(b.run==='门禁阻断'){dot='red';state='扫描未通过 · 自动启动失效';copy='计划启动时间前未达到 100% 通过，后续只能修复后人工启动；缺失数据运行需业务审批。';riskBtn='';}
         else if(b.run==='待风险确认'){dot='warn';state='存在风险 · 等待确认';copy=`${pass}/${total} 通过，${warn} 个 WARN 需责任人确认；未达到 100% 通过前不自动启动。`;}
         else if(b.run==='已就绪'){dot='green';state='100% 通过 · 可提前开始';copy='已满足启动条件。计划时间前可人工立即开始；到计划时间仍未启动则按自动跑批配置执行。';}
@@ -3117,7 +3170,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <div class="manifest-stat"><span>风险</span><strong style="color:var(--amber-700)">${warn}</strong><small>需确认或申请例外</small></div>
         <div class="manifest-stat"><span>阻断 / 例外</span><strong style="color:${block?'var(--red-700)':'var(--violet-700)'}">${block} / ${waived}</strong><small>${block?'存在 P0 阻断项':'风险项已有审批记录'}</small></div>`;
       const runStarted=!isPreRunBatch(b);
-      const runFinished=b?.run==='已完成'||b?.run==='部分失败';
+      const runFinished=b?.run==='已完成'||b?.run==='待修复';
       const shardInfo=batchStates[b?.id]?.shards;
       $('#manifestPhaseBoard').innerHTML=`
         <div class="manifest-phase-card pre"><div><div class="manifest-phase-top"><strong>01 跑前</strong>${block?badge('阻断','red'):warn?badge('有提示','amber'):pending||checking?badge('待核验','gray'):badge('已通过','green')}</div><div class="manifest-phase-summary">确认这批数据能否开始。检查完成后通过或确认提示，再手动开始跑批。</div><div class="manifest-phase-metrics"><span>通过<strong>${pass}/${total}</strong></span><span>阻断<strong>${block}</strong></span><span>提示<strong>${warn}</strong></span></div></div><div class="manifest-phase-action"><span class="tiny muted">当前正在查看检查项</span></div></div>
@@ -3234,11 +3287,10 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       btn.title=canStart?(warn?'存在 WARN，点击表示确认风险并开始':'清单检查通过，可手动开始'):'当前不满足手动启动条件';
       const eventReportBtn=$('#eventReportActionBtn');
       if(eventReportBtn){
-        const finished=b && ['已完成','部分失败','已停止','已终止'].includes(b.run);
+        const finished=b && ['已完成','待修复','已停止','已终止'].includes(b.run);
         const generated=batchStates[b?.id]?.eventReportGenerated;
-        const noRepNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b?.taskId)||{}).reportScene==='无报告':false);
-        eventReportBtn.disabled=!finished||noRepNow;
-        eventReportBtn.style.display=noRepNow?'none':'';
+        eventReportBtn.disabled=!finished;
+        eventReportBtn.style.display='';
         eventReportBtn.innerHTML=finished&&generated?`${icon('file','icon icon-sm')}查看报告`:`${icon('file','icon icon-sm')}生成报告`;
         eventReportBtn.title=!finished?'跑批完成后可生成事件报告':generated?'打开整批跑批事件报告':'生成整批跑批事件报告';
       }
@@ -3619,7 +3671,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
          const hay=[b.id,b.groupId,b.taskId||'',dn,rowT.name||'',rowT.reportScene||'',b.businessDate||'',b.expectedSliceDate||'',b.batchName||''].map(x=>String(x||'').toLowerCase()).join(' ');
          return hay.includes(q);
        });
-      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
+      if(st){ const C={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','待修复':'待修复','已停止':'已终止','已终止':'已终止'}; filtered=filtered.filter(b=>(C[b.run]||b.run)===st); }
       const total=filtered.length, per=(window.__listPageSize&&window.__listPageSize.batch)||5, pages=Math.max(1,Math.ceil(total/per));
       const lp=window.__listPage||{};
       let pg=Math.min(Math.max(1,lp.batch||1),pages);
@@ -3632,11 +3684,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const totalStat = $('#batchTotalStat'); if (totalStat) totalStat.textContent = total;
       if(!filtered.length){ const colN=document.querySelectorAll('#view-batches .bl-table thead th').length||8; $('#batchTableBody').innerHTML = '<tr><td colspan="'+colN+'"><div class="bl-empty">没有匹配的批次</div></td></tr>'; renderShardManagement(); return; }
       $('#batchTableBody').innerHTML = filtered.map(b => {
-        const bs = batchStates[b.id] || {interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'};
+        const bs = batchStates[b.id] || {interventionApplied:false,packageValidated:false,reportGenerated:false,reportStatus:'idle',published:false,pushStatus:'pending'};
         const manifest = getManifest(b.id);
         const verifyFailed = manifest.status==='FAILED';
-        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','部分失败':'失败','已停止':'失败','已终止':'已终止'};
-        const RUNCLS={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
+        const CANON={'待启动':'待启动','已就绪':'待启动','检查中':'待启动','待风险确认':'待启动','门禁阻断':'待启动','已排期':'待启动','运行中':'运行中','已完成':'成功','待修复':'待修复','已停止':'已终止','已终止':'已终止'};
+        const RUNCLS={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','待修复':'amber','已终止':'gray'};
         const runLabel=CANON[b.run]||b.run;
         const runClass=RUNCLS[runLabel]||'gray';
         const mc = manifestCounts(manifest);
@@ -3649,42 +3701,37 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const manifestIssue = (mc.BLOCK||0) + (mc.WARN||0) + (mc.PENDING||0);
         const sopFlag=b.sopProfileId==='late'?' · 晚申请':b.sopProfileId==='adhoc'?' · 临时跑批':'';
         const manifestSummary = ((mc.BLOCK||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.BLOCK} 阻断` : (mc.WARN||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.WARN} 风险` : (mc.PENDING||0) ? `${mc.PASS||0}/${manifest.checks.length} 通过 · ${mc.PENDING} 待核验` : `${manifest.checks.length}/${manifest.checks.length} 通过`)+sopFlag;
-        const finished=['已完成','部分失败','已停止','已终止'].includes(b.run);
+        const finished=['已完成','待修复','已停止','已终止'].includes(b.run);
         const ic=(iconId,title,attrs,disabled)=>`<button class="bl-ic" ${attrs||''} ${disabled?'disabled':''} title="${title}" aria-label="${title}"><svg class="icon icon-sm"><use href="#${iconId}"/></svg></button>`;
         const empty='';
         const actDetail=ic('i-eye','查看详情',`data-detail-modal="${b.id}"`);
         const actMonitor='';
         const actStop=((isRunning||preRun) && runLabel!=='失败')?ic('i-stop',preRun?'终止本次跑批':'终止',`data-batch-act="stop" data-batch-id="${b.id}"`):empty;
         const rowTask=tasks.find(t=>t.id===b.taskId);
-        const manualReport=rowTask && rowTask.reportGen==='手动生成';
-        const noReport=!!rowTask && rowTask.reportScene==='无报告';
-        const repLabel=!finished ? '跑批完成后可生成报告' : (bs.reportGenerated ? '查看报告' : '生成报告');
+        const repState=bs.reportStatus || (bs.reportGenerated ? 'success' : 'idle');
         let actReport='<span class="bl-ic-empty"></span>';
-        if(!noReport){
-          actReport=ic('i-report',repLabel,`data-report-action="${b.id}"`,!finished);
-          if(finished && bs.reportGenerated) actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
+        if(repState==='generating'){
+          actReport=`<button class="bl-ic rep-busy" type="button" title="报告生成中…" data-native-tip="1" aria-label="报告生成中…" aria-disabled="true"><i class="spin"></i></button>`;
+        } else if(repState==='failed'){
+          actReport=ic('i-alert','报告生成失败，点击重试',`data-report-action="${b.id}" data-native-tip="1"`).replace('class="bl-ic"','class="bl-ic rep-fail"');
+        } else {
+          const idleTitle=finished?'生成报告':'跑批完成后可生成报告';
+          actReport=ic('i-report',repState==='success'?'查看报告':idleTitle,`data-report-action="${b.id}" data-native-tip="1"`,!finished);
+          if(finished && repState==='success') actReport=actReport.replace('class="bl-ic"','class="bl-ic rep-done"');
         }
-        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
+        const monitorText = isRunning ? '<span class="badge red">1 分片失败</span><div class="cell-sub">2 个资源告警 · 可单独重跑</div>' : b.run==='待修复' ? '<span class="badge amber">待修复</span><div class="cell-sub">'+Math.max(1,Math.round((Number(String(b.people||'').replace(/[^0-9]/g,''))||0)/300*0.02))+' 个分片最终失败 · 可一键修复</div>' : isStopped ? '<span class="badge amber">'+(b.run==='已终止'?'已终止':'已停止')+'</span><div class="cell-sub">保留已完成分片</div>' : preRun ? '<span class="badge gray">未开始</span><div class="cell-sub">复检后再启动</div>' : '<span class="badge green">已结束</span><div class="cell-sub">查看终态证据</div>';
         const hasRunList=(Number(b.progress)||0)>0 || !!b.startedAt;
         const userCount=Number(String(b.people||'').replace(/[^0-9]/g,''))||0;
         const successCount = runLabel==='成功' ? userCount
           : runLabel==='失败' ? Math.round(userCount*0.96)
-          : ((runLabel==='运行中'||(runLabel==='已终止'&&hasRunList)) && (Number(b.progress)||0)>0) ? Math.round(userCount*(Number(b.progress)||0)/100)
+          : ((runLabel==='运行中'||runLabel==='待修复'||(runLabel==='已终止'&&hasRunList)) && (Number(b.progress)||0)>0) ? Math.round(userCount*(Number(b.progress)||0)/100)
           : null;
         const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
         const execStart=hasRunList ? (b.startedAt || b.requestedAt || '—') : '—';
         const execEnd=hasRunList ? (b.endedAt || '—') : '—';
         const durText=(execStart!=='—'&&execEnd!=='—')?(()=>{const a=new Date(execStart.replace(' ','T')),z=new Date(execEnd.replace(' ','T'));if(isNaN(a)||isNaN(z))return '—';const m=Math.max(0,Math.round((z-a)/60000));const h=Math.floor(m/60);return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min'));})():'—';
         const taskName = (tasks.find(t=>t.id===b.taskId)||{}).name || b.taskId || '—';
-        const verifyLabel = manifest.status==='FAILED' ? '核验失败'
-          : ((mc.BLOCK||0)>0 || (mc.WARN||0)>0) ? '核验不通过'
-          : manifest.status==='CHECKING' ? '核验中'
-          : ((mc.PENDING||0)>0 || manifest.status==='WAITING_CHECK') ? '待核验'
-          : '核验通过';
-        const verifyClass = verifyLabel==='核验失败' ? 'red'
-          : verifyLabel==='核验不通过' ? 'red'
-          : verifyLabel==='核验中' ? 'blue'
-          : verifyLabel==='待核验' ? 'gray' : 'green';
+        const verifyCell = verifyChip(b);
         return `<tr data-row-batch="${b.id}">          <td data-bcol="name"><div class="bl-task">${b.batchName||taskName}</div></td>
 
           <td data-bcol="id"><div class="bl-id">${b.id}</div></td>
@@ -3694,7 +3741,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <td data-bcol="users"><div class="bl-mono">${userCount?fmtCount(userCount):'—'}</div></td>
           <td data-bcol="success"><div class="bl-mono">${successCount!=null?fmtCount(successCount):'—'}</div></td>
           <td data-bcol="rate"><div class="bl-rate">${rateText}</div></td>
-          <td data-bcol="verify"><div>${badge(verifyLabel,verifyClass)}</div></td>
+          <td data-bcol="verify"><div>${verifyCell}</div></td>
           <td data-bcol="run"><div class="bl-state-cell">${badge(runLabel,runClass)}</div></td>
           <td data-bcol="gen"><div class="bl-mono">${b.requestedAt||"—"}</div></td>
           <td data-bcol="started"><div class="bl-mono">${execStart}</div></td>
@@ -3718,8 +3765,8 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         return;
       }
       const s=getShardSummary(b);
-      const finished=b.run==='已完成'; const partial=b.run==='部分失败';
-      const stateLabel=partial?'部分失败':finished?'已完成':'运行中'; const stateClass=partial?'red':finished?'green':'blue';
+      const finished=b.run==='已完成'; const partial=b.run==='待修复';
+      const stateLabel=partial?'待修复':finished?'已完成':'运行中'; const stateClass=partial?'amber':finished?'green':'blue';
       const badgeEl=$('#shardStatusBadge'); if(badgeEl){badgeEl.textContent=stateLabel;badgeEl.className=`badge ${stateClass}`;}
       grid.innerHTML=`<div class="kpi"><div class="kpi-label">分片总数</div><div class="kpi-value">${fmtCount(s.total)}</div><div class="kpi-delta">只展示汇总与异常</div></div><div class="kpi"><div class="kpi-label">已完成</div><div class="kpi-value">${fmtCount(s.completed)}</div><div class="kpi-delta">按分片统计</div></div><div class="kpi"><div class="kpi-label">运行中 / 排队</div><div class="kpi-value">${s.running} / ${fmtCount(s.queued)}</div><div class="kpi-delta">其他分片继续执行</div></div><div class="kpi"><div class="kpi-label">自动重试 / 人工</div><div class="kpi-value">${s.retrying} / ${s.manual}</div><div class="kpi-delta">重试耗尽后触发告警</div></div>`;
       body.innerHTML=`<div class="card"><div class="card-head"><div><h2>异常分片</h2><p>只展示重试中、重试耗尽和不可恢复异常；成功分片不逐片展开。</p></div><span class="badge ${partial?'red':finished?'green':'amber'}">${partial?'需人工处理':finished?'自动恢复完成':'运行监控中'}</span></div><div class="card-body"><div class="exception-list">${shardExceptionRows(b)}</div><div class="retry-policy"><div><strong>自动重试</strong><span>网络、临时 I/O、锁等待最多重试 3 次</span></div><div><strong>告警分级</strong><span>P1：局部耗尽；P0：不可恢复或达到 Batch 阻断阈值</span></div><div><strong>动态修复调度</strong><span>复用当前批次空闲容量，不预占资源；资源紧张时延后</span></div></div><div class="decision-note" style="margin-top:10px"><strong>修复方式：</strong>只重试失败分片，不重开整批；资源不足时延后到跑后统一处理。</div>${partial?'<div class="decision-note" style="margin-top:12px;background:#fff7f7;border-color:#f1c8ca;color:#7b2c34"><strong>消费已阻断：</strong>可一键重试失败分片，或按业务审批走部分结果消费。</div>':''}</div></div>`;
@@ -3807,10 +3854,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       else if(b.run==='待启动') { stage='待跑前复检'; next='执行 14 天数据量、切片日期与质量检查'; gate=`${mc.PASS||0} 通过 · ${mc.PENDING||0} 待核验`; owner='批处理 Owner'; note='Manifest 已自动生成'; }
       else if(b.run==='已排期') { stage='等待人工启动'; next='确认后调用调度器'; gate='检查完成'; owner='批处理 Owner'; note='系统不自动启动'; }
       else if(b.run==='运行中') { stage='策略执行中'; next='完成后确认最终结果'; gate='分片执行中'; owner='平台值班'; note='按分片顺序执行'; }
+      else if(b.run==='待修复') { stage='待修复'; next='一键修复失败分片后重新确认结果'; gate=`${mc.PASS||0}/${m.checks.length} 通过`; owner='平台值班 + 业务运营'; note='跑批已结束，失败分片可单独重跑'; }
       else if(bs.pushStatus==='partial') { stage='下游部分失败'; next='查看失败明细并重试'; gate='已完成'; owner='下游集成值班'; note='保留失败证据与回执'; }
       else if(bs.published) { stage='下游已消费'; next=bs.reportGenerated?'Report 已生成':'生成并查看 Report'; gate='已对账'; owner='业务运营'; note='批次可进入关账'; }
       else if(bs.interventionApplied) { stage='等待下游推送'; next='确认推送下游'; gate='最终结果已冻结'; owner='业务运营'; note=bs.interventionSkipped?'系统结果已直接确认':'人工调整已应用'; }
-      else if(b.run==='已完成'||b.run==='部分失败') { stage='等待最终确认'; next='确认系统结果或完成人工调整'; gate='跑批已完成'; owner='业务运营'; note='无需调整时可直接生成最终版本'; }
+      else if(b.run==='已完成'||b.run==='待修复') { stage='等待最终确认'; next='确认系统结果或完成人工调整'; gate='跑批已完成'; owner='业务运营'; note='无需调整时可直接生成最终版本'; }
       el.innerHTML=`
         <div class="batch-state-cell current"><span>当前阶段</span><strong>${stage}</strong><small>${note}</small></div>
         <div class="batch-state-cell"><span>下一步系统动作</span><strong>${next}</strong><small>${b.run==='已排期'?'自动执行':'由责任人完成'}</small></div>
@@ -4002,7 +4050,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const b=batches.find(x=>x.id===state.currentBatchId);
       return {
         checklist:true,
-        detail:!!b && ['已完成','部分失败'].includes(b.run)
+        detail:!!b && ['已完成','待修复'].includes(b.run)
       };
     }
     function syncBatchTabs() {
@@ -4337,7 +4385,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const id=`B${businessDate.replaceAll('-','')}${String(batches.length+1).padStart(3,'0')}`;
       const newBatch={id,taskId:state.currentTaskId,opco,businessDate,scheduleAt:scheduledAt,expectedSliceDate:selectedSliceDate,sliceDate:selectedSliceDate,startMode:createdMode,scheduleMode:createdMode,schedule_mode:createdMode,requestedAt,...requestMeta,groupId:groups.map(g=>g.name).join(' + '),groupVersion:'自动冻结',inputSource,inputSourceLabel,sourceBatch,sourceLayer,targetSystems:['lms','digiops'],inputSnapshotId,inputCompatibility:compatibility.status,inputCoverage:Number(compatibility.coverage.toFixed(1)),sliceAt:inputSource==='batch'?`复用 ${sourceBatch}`:`待核验 · 指定 ${selectedSliceDate}`,compareBatch,strategyName:'UG-OD-Monthly v4.3',modelName:'申请卡模型 v2',run:checkingOnCreate?'检查中':'待启动',runClass:'blue',progress:0,review:'未开始',reviewClass:'gray',downstream:'未发布',downstreamClass:'gray',report:'0 / 4',reportClass:'gray',people:fmtCount(group.count)};
       batches.unshift(newBatch);
-      batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'};
+      batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,reportStatus:'idle',published:false,pushStatus:'pending'};
       resetManifestForBatch(id,createdMode,scheduledAt,requestMeta,selectedSliceDate);
       closeBatchRequest();
       state.currentBatchId=id; renderBatches(); navigate('batch','manifest');
@@ -4471,7 +4519,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       const interventionHeader = $('#openInterventionHeader');
       const ready = bs.interventionApplied;
       const closed = Boolean(bs.consumptionClosed);
-      if (interventionHeader) { const finished=['已完成','部分失败'].includes(b.run); interventionHeader.style.display=finished?'':'none'; interventionHeader.disabled=!finished; interventionHeader.innerHTML=`${icon('sliders','icon icon-sm')}结果处理`; }
+      if (interventionHeader) { const finished=['已完成','待修复'].includes(b.run); interventionHeader.style.display=finished?'':'none'; interventionHeader.disabled=!finished; interventionHeader.innerHTML=`${icon('sliders','icon icon-sm')}结果处理`; }
       if (btn) {
         btn.disabled = processing || (!ready && !bs.published);
         if (processing) btn.innerHTML = `${icon('clock','icon icon-sm')}${waitingStart ? '等待自动启动' : warningReview ? '等待风险确认' : checkingManifest ? 'Manifest 检查中' : readyToStart ? '预检通过，待启动' : waitingPlan ? '等待计划时间' : b.run === '运行中' ? 'Batch 运行中' : b.run === '已停止' ? 'Batch 已停止' : '门禁阻断'}`;
@@ -4491,10 +4539,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       }
       const eventReportBtn = $('#eventReportActionBtn');
       if (eventReportBtn) {
-        const finished=['已完成','部分失败','已停止','已终止'].includes(b.run);
-        const noRepNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).reportScene==='无报告':false);
-        eventReportBtn.disabled = !finished||noRepNow;
-        eventReportBtn.style.display=noRepNow?'none':'';
+        const finished=['已完成','待修复','已停止','已终止'].includes(b.run);
+        eventReportBtn.disabled = !finished;
+        eventReportBtn.style.display = '';
         eventReportBtn.innerHTML = `${icon('file','icon icon-sm')}${!finished?'生成报告':bs.eventReportGenerated?'查看报告':'生成报告'}`;
         eventReportBtn.title = !finished?'跑批完成后可生成事件报告':bs.eventReportGenerated?'打开整批跑批事件报告':'生成整批跑批事件报告';
       }
@@ -4550,25 +4597,27 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     }
     function handleReportAction(batchId) {
       const id = batchId || state.currentBatchId;
-      const bs = batchStates[id] || batchStates.B20260624001;
-      if (bs.reportGenerated) {
-        toast('查看报告',`${id} 的 Report 已生成；演示原型暂不跳转独立报告页。`);
-        return;
-      }
-      toast('正在生成报告',`${id} 的 Report 正在生成，请稍候。`);
+      const bs = batchStates[id]; if(!bs) return;
+      const st = bs.reportStatus || (bs.reportGenerated ? 'success' : 'idle');
+      if (st === 'generating') return;
+      if (st === 'success') { bs.reportGenerated = true; toast('查看报告',`${id} 的报告已生成；演示原型暂不跳转独立报告页。`); return; }
+      const retry = st === 'failed';
+      bs.reportStatus = 'generating';
+      renderBatches();
+      if (id === state.currentBatchId) applyBatchView(id);
+      toast(retry ? '正在重试生成报告' : '正在生成报告', `${id} 的报告正在生成，请稍候。`);
       setTimeout(() => {
+        bs.reportStatus = 'success';
         bs.reportGenerated = true;
         renderBatches();
-        if (batchId === state.currentBatchId) applyBatchView(state.currentBatchId);
-        toast('Report 已生成', `${id} 的 Report 已就绪。再次点击“查看报告”即可查看。`);
-      }, 900);
+        if (id === state.currentBatchId) applyBatchView(id);
+        toast('报告已生成', `${id} 的报告已就绪，点击报告按钮即可查看。`);
+      }, 3000);
     }
     function handleEventReportAction(batchId) {
       const id=batchId||state.currentBatchId; const b=batches.find(x=>x.id===id); const bs=batchStates[id];
       if(!b||!bs) return;
-      if(!['已完成','部分失败','已停止','已终止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
-      const rt=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
-      if(rt.reportScene==='无报告') return toast('无报告','该 Task 报告场景为无报告，不生成事件报告。');
+      if(!['已完成','待修复','已停止','已终止'].includes(b.run)) return toast('暂时不能生成','事件报告在跑批完成后才能生成。');
       const btn=$('#eventReportActionBtn');
       const reportUrl=`./event-report.html?batch=${encodeURIComponent(id)}`;
       const openReportPage=()=>{
@@ -4733,7 +4782,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           type:'风控调额', dataScope:([...taskSelectedGroups].join(' · ')||$('#runGroupSelect')?.value||'limitIncreaseGroupV1'),
           strategy:$('#taskStrategySelect')?.value||'UG-OD-Monthly', version:'v1.0',
           strategyVersion:$('#taskStrategyVersion')?.value||'1', versionType:$('#taskVersionType')?.value||'正式',
-          reportScene:$('#taskReportScene')?.value||'贷前', reportGen:($('#taskReportScene')?.value==='无报告'?'—':($('#taskReportGen')?.value||'自动生成')),
+          reportScene:$('#taskReportScene')?.value||'贷前', reportGen:($('#taskReportGen')?.value||'自动生成'),
           description:$('#taskDesc')?.value||'',
           notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],
           createdBy:'胡唐', createdAt:nowStamp(), updatedAt:nowStamp(),
@@ -4877,7 +4926,9 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   const stateLabelOf=b=>{
     if(demoFinished||['已完成','成功'].includes(b.run)) return '成功';
     if(b.run==='已终止') return '已终止';
-    if(['部分失败','失败','已停止'].includes(b.run)) return '失败';
+    if(b.run==='待修复') return '待修复';
+    if(b.run==='已停止') return '已终止';
+    if(b.run==='失败') return '失败';
     if(['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run)) return '待启动';
     return '运行中';
   };
@@ -4908,7 +4959,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function runPanel(b){
     const p=(demoP==null?pctOf(b):demoP), people=peopleOf(b), shards=Math.max(1,Math.round(people/300));
     const preRunB=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const fin=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
+    const fin=['已完成','待修复','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
     const hasRun=(Number(b.progress)||0)>0 || !!b.execStart || !!b.startedAt;
     const showResults=fin && hasRun;
     const preRunView=preRunB || (fin && !hasRun);
@@ -4916,39 +4967,35 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const durationMin=Math.max(12,Math.round(people/900));
     let seed=0; for(const ch of (b.id||'')) seed=(seed*31+ch.charCodeAt(0))%9973;
     const avgSpeed=fmtCount(Math.round(900+(seed%500)));
-    const pctTxt=p.toFixed(1)+'%';
     const rowTaskNow=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}):{});
-    const noReportNow=rowTaskNow.reportScene==='无报告';
     const bsNow=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
-    const eventReportState=noReportNow?'无报告':((bsNow.eventReportGenerated||b.eventReportGenerated)?'已生成':'未生成');
+    const eventReportState=(bsNow.eventReportGenerated||b.eventReportGenerated)?'已生成':'未生成';
     const startTs=b.startedAt||b.requestedAt||'';
     const endTs=b.endedAt||'';
     const durText2=(()=>{ if(!startTs||!endTs)return '—'; const a=new Date(startTs.replace(' ','T')),z=new Date(endTs.replace(' ','T')); if(isNaN(a)||isNaN(z)||z<a)return '—'; const m=Math.round((z-a)/60000),h=Math.floor(m/60); return (h?h+'h':'')+((m%60)?(m%60)+'min':(h?'':'0min')); })();
-    const pctLabel=stateLabelOf(b);
-    const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-    const startD=new Date(); startD.setHours(6,0,0,0);
-    const endD=new Date(startD.getTime()+durationMin*60000);
-    const failShards=['部分失败','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
+    const verifyNow=verifyInfoOf(b);
+    const failShards=['待修复','失败'].includes(b.run)?Math.max(1,Math.round(shards*0.02)):(b.run==='已停止'?Math.max(1,Math.round(shards*0.01)):0);
     const okShards=Math.max(0,Math.round(shards*Math.min(100,p)/100)-failShards);
     const resultTxt=stateLabelOf(b);
     const taskName=(typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'—';
     const metric=(label,val,sub)=>'<div class="bd-metric"><span>'+label+'</span><b>'+val+'</b><i>'+sub+'</i></div>';
-    const summary=metric('百分比进度',pctTxt,'完成度')+metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
+    const summary=metric('本次总耗时',durText2,'全程')+metric('平均速度',avgSpeed,'万人 / 小时')+metric('总分片数',fmtCount(shards),'全部分片');
     const live='<div class="bd-metric bd-metric-live"><span>处理速度</span><div class="bd-metric-line"><b id="bdSpeedVal">'+avgSpeed+'</b><i>万人 / 小时</i></div></div>';
-    const waitBlock='<div class="bd-wait"><b>等待启动</b></div>';
-    const right=preRunView?waitBlock:'<div class="bd-exec-metrics'+(showResults?'':' solo')+'">'+(showResults?summary:live)+'</div>';
+    const waitBlock='<div class="bd-wait"><span>批次尚未启动，跑批完成后展示执行总结与批次关键信息。</span></div>';
+    const right=preRunView?waitBlock:'<div class="bd-exec-metrics'+(showResults?' trio':' solo')+'">'+(showResults?summary:live)+'</div>';
     const kicker=preRunView?'等待启动':(showResults?'执行总结':'执行进度');
-    const abnormalText=b.run==='部分失败'?failShards+' 个分片最终失败，已完成分片保留':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
+    const abnormalText=b.run==='待修复'?failShards+' 个分片最终失败，已完成分片保留，可一键修复':(b.run==='已终止'?'本次跑批已被人工终止，未完成分片不再调度':(b.run==='已停止'?'未完成分片已保留，需人工处理':'请查看失败分片与事件报告'));
     const stateBar='';
-    const kv=(k,v,cls)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+v+'</b></div>';
+    const kv=(k,v,cls,raw)=>'<div class="bd-kv"><span>'+k+'</span><b'+(cls?' class="'+cls+'"':'')+'>'+(raw?v:String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;'))+'</b></div>';
     const keyInfo = !showResults ? '' :
       '<div class="bd-sec bd-keyinfo">'+
         '<div class="bd-keyinfo-head">批次关键信息</div>'+
         '<div class="bd-kv-grid">'+
-          kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':'bad')+
-          kv('跑批创建时间',startTs||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
+          kv('批次号',b.id)+kv('Task Name',taskName)+kv('执行结果',resultTxt,resultTxt==='成功'?'ok':resultTxt==='待修复'?'warn':'bad')+
+          kv('跑批创建时间',b.requestedAt||'—')+kv('切片日期',b.expectedSliceDate||'—')+kv('批次人数',fmtCount(people)+' 人')+
           kv('开始时间',startTs||'—')+kv('结束时间',endTs||'—')+kv('总耗时',durText2)+
-          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')++
+          kv('成功分片',fmtCount(okShards))+kv('失败分片',fmtCount(failShards),failShards?'bad':'')+
+          kv('核验状态',verifyChip(b),'',true)+
         '</div>'+
       '</div>';
     const EV={SLICE_ANOMALY:'切片异常',BATCH_FAILED:'跑批中断/失败',BATCH_DONE:'跑批完成汇总',REPORT_RESULT:'报告生成结果'};
@@ -4963,7 +5010,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     let evKeys=(okLabel==='成功')?['SLICE_ANOMALY','BATCH_DONE','REPORT_RESULT']
       :(okLabel==='失败'||okLabel==='已终止')?['SLICE_ANOMALY','BATCH_FAILED']
       :['SLICE_ANOMALY','BATCH_FAILED'];
-    if(noReportNow) evKeys=evKeys.filter(k=>k!=='REPORT_RESULT');
     const hasRecords=showResults && evKeys.length>0;
     const noteDate=b.businessDate||'';
     const noteItems=[];
@@ -4982,46 +5028,46 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const runningNow=b.run==='运行中' && !fin;
     const phReport='<div class="bd-report-head"><b>批次事件报告</b><span>PDF</span></div><div class="bd-notify-empty"><b>跑批完成后生成</b><span>终态后自动生成事件报告</span></div>';
     const phNotify='<div class="bd-report-head"><b>告警通知记录</b><span>—</span></div><div class="bd-notify-empty"><b>暂无告警通知记录</b><span>记录将在跑批过程中产生</span></div>';
-    const noReportCard='<div class="bd-report-head"><b>批次事件报告</b><span>—</span></div><div class="bd-notify-empty"><b>该 Task 未配置报告</b><span>报告场景为无报告，不生成事件报告</span></div>';
     const pdfCard='<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+
           '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+
             '<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>'+(eventReportState==='已生成'?(b.endedAt||b.requestedAt||'—'):'—')+'</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">'+eventReportState+'</b></div>'+
             '<div class="bd-btns"><button class="bd-btn primary" '+(eventReportState==='已生成'?'':'disabled')+' data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" '+(eventReportState==='已生成'?'':'disabled')+' data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>';
     const lowerBlock=runningNow
-      ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+(noReportNow?noReportCard:phReport)+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
+      ? '<div class="bd-sec bd-lower"><div class="bd-report-col">'+phReport+'</div><div class="bd-notify-col">'+phNotify+'</div></div>'
       : '<div class="bd-sec bd-lower">'+
-        '<div class="bd-report-col">'+(noReportNow?noReportCard:(preRunView? '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+ '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+'<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>—</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">未生成</b></div>'+'<div class="bd-btns"><button class="bd-btn primary" disabled data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" disabled data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>' : pdfCard))+'</div>'+
+        '<div class="bd-report-col">'+(preRunView? '<div class="bd-report-head"><b>'+b.id+'-跑批事件报告</b><span>PDF</span></div>'+ '<div class="bd-report-body"><div class="bd-pdf"><span class="tag">PDF</span><b>Batch Event Report</b><i></i><i></i><div class="bars"><em></em><em></em><em></em><em></em><em></em><em></em></div></div>'+'<div class="bd-report-side"><div class="bd-row"><span>生成时间</span><b>—</b></div><div class="bd-row"><span>生成状态</span><b id="bdReportState">未生成</b></div>'+'<div class="bd-btns"><button class="bd-btn primary" disabled data-bd-toast="线上将打开独立的报告页面（演示）">预览</button><button class="bd-btn" disabled data-bd-toast="PDF 下载（演示）">下载</button></div></div></div>' : pdfCard)+'</div>'+
         '<div class="bd-notify-col">'+
           '<div class="bd-report-head"><b>告警通知记录</b><span>'+(hasRecords?noteCount+' 条':'0 条')+'</span></div>'+
           notifyBlock+
         '</div>'+
       '</div>';
+    const repairBlock=(b.run==='待修复' && showResults)
+      ? '<div class="bd-repair"><div class="bd-repair-txt"><b>'+fmtCount(failShards)+' 个分片最终失败</b><span>只重跑失败分片，不重开整批；结束时间与总耗时按原跑批统计</span></div><button class="bd-btn primary'+(b.repairing?' loading':'')+'" id="bdRepairBtn" type="button" title="只重跑失败分片，不重开整批"'+(b.repairing?' disabled':'')+'>'+(b.repairing?'<i class="spin"></i>修复中…':'一键修复分片')+'</button></div>'
+      : '';
     return '<div class="bd-sec first bd-exec">'+
-        '<div class="bd-exec-top">'+
-          '<div class="bd-exec-progress">'+
-            '<div class="bd-exec-kicker">'+kicker+'</div>'+
-            '<div class="bd-exec-big"><b id="bdPct">'+pctTxt+'</b><span id="bdPctLabel">'+pctLabel+'</span></div>'+
-            '<div class="bd-exec-bar"><i id="bdBar" style="width:'+p.toFixed(1)+'%"></i></div>'+
-          '</div>'+
-          right+
-        '</div>'+
+        '<div class="bd-exec-kicker">'+kicker+'</div>'+
+        right+
         stateBar+
       '</div>'+
+      repairBlock+
       keyInfo+
       lowerBlock;
   }
+
   function reportPanel(b){
-    const running=b.run==='运行中';
     const bsR=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
-    const gen=!!(bsR.reportGenerated||b.reportGenerated||bsR.eventReportGenerated);
-    const st=[(gen?'已生成':(running?'生成中':'待生成')),'未勾选',(gen?'已生成':(running?'生成中':'待生成')),'未勾选','未勾选'];
-    const cls={'已生成':'green','生成中':'blue','待生成':'gray','未勾选':'off'};
+    const repState=bsR.reportStatus || (bsR.reportGenerated||b.reportGenerated?'success':'idle');
+    /* 只保留报告按钮与状态图标，不再展示已生成 / 未生成 / 生成中文字 */
     const rows=REPORT_DEFS.map((r,i)=>{
-      const stt=st[i];
-      return '<div class="bd-rep"><div><div class="nm">'+r[0]+'</div><div class="sb">'+r[1]+'</div></div><span class="bd-badge '+cls[stt]+'">'+stt+'</span><button class="bd-btn" data-bd-report-open="'+r[0]+'">查看</button></div>';
+      const on=(i===0||i===1)?(repState==='success'):false;
+      const icHtml=repState==='generating' ? '<i class="spin rep-ic-spin"></i>'
+        : repState==='failed' ? '<svg class="icon icon-sm rep-ic-fail"><use href="#i-alert"/></svg>'
+        : '<svg class="icon icon-sm"><use href="#i-report"/></svg>';
+      return '<div class="bd-rep"><div><div class="nm">'+r[0]+'</div><div class="sb">'+r[1]+'</div></div><span class="bd-rep-ic">'+icHtml+'</span><button class="bd-btn" data-bd-report-open="'+r[0]+'"'+(on?'':' disabled')+'>查看</button></div>';
     }).join('');
     return '<div class="bd-sec first"><div class="bd-sh"><b>报告清单</b><span>共 5 个模板</span></div><div class="bd-rep-list">'+rows+'</div></div>';
   }
+
   function pushPanel(b){
     return '<div class="bd-sec first"><div class="bd-placeholder">'+
       '<div class="bd-placeholder-t">推送与消费</div>'+
@@ -5037,7 +5083,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   function startDemo(b){
     stopDemo();
     const people=peopleOf(b), shards=Math.max(1,Math.round(people/4000));
-    const failN=b.run==='部分失败'?Math.max(1,Math.round(shards*0.02)):0;
+    const failN=b.run==='待修复'?Math.max(1,Math.round(shards*0.02)):0;
     const speed=Math.round(180+(people%37));
     const totalMin=Math.round(people/(speed*10000/60));
     {const bd=el('bdBadges'); if(bd) bd.innerHTML=badge('运行中','blue');}
@@ -5049,9 +5095,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       demoP=p;
       const done=Math.max(0,Math.min(shards-failN,Math.round(shards*p/100)));
       const ringEl=el('bdRing'); if(ringEl) ringEl.setAttribute('stroke-dashoffset', (C*(1-p/100)).toFixed(2));
-      if(el('bdPct')) el('bdPct').textContent=p.toFixed(1)+'%';
-      if(el('bdBar')) el('bdBar').style.width=p.toFixed(1)+'%';
-      if(el('bdPctLabel')) el('bdPctLabel').textContent=stateLabelOf(b);
       if(el('bdDone')) el('bdDone').textContent=fmtCount(Math.round(people*p/100));
       if(el('bdRemain')) el('bdRemain').innerHTML=(p>=100?'&nbsp;':'剩余 '+hhmm(totalMin*(1-p/100)));
       if(el('bdShards')) el('bdShards').textContent=fmtCount(done);
@@ -5078,17 +5121,31 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const dispName=b.batchName||((((typeof tasks!=='undefined'?(tasks.find(t=>t.id===b.taskId)||{}).name:'')||'')).trim());
     const tt=el('bdTitle'); if(tt){ tt.textContent=dispName; tt.setAttribute('title',dispName); }
     const idEl=el('bdId'); if(idEl){ idEl.textContent=b.id; idEl.setAttribute('title',b.id); }
-    {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'};
+    {const cls={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','待修复':'amber','已终止':'gray'};
      const st=el('bdStatus'); if(st){ st.textContent=stateLabelOf(b); st.className='bd-status '+(cls[st.textContent]||'gray'); }}
     el('bdMeta').innerHTML='<span>跑批创建时间 '+(b.businessDate||'—')+'</span><i>·</i><span>切片日期 '+(b.expectedSliceDate||'—')+'</span><i>·</i><span>本批次预计 '+((b.people&&b.people!=='--')?b.people:'—')+' 人</span>';
-    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','已终止':'amber'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
+    {const bd=el('bdBadges'); if(bd){ const sc={'待启动':'gray','运行中':'blue','成功':'green','失败':'red','待修复':'amber','已终止':'gray'}; bd.innerHTML=badge(stateLabelOf(b),sc[stateLabelOf(b)]||'gray'); }}
     const preRunNow=['待启动','已就绪','检查中','待风险确认','门禁阻断','已排期'].includes(b.run);
-    const finalNow=['已完成','部分失败','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
+    const finalNow=['已完成','待修复','已停止','已终止','成功','失败'].includes(b.run)||demoFinished;
     const animate = !(opts && opts.animate===false) && b.run==='运行中' && !finalNow;
     demoP = demoFinished ? 100 : ((tab==='run' && !preRunNow && animate) ? pctOf(b) : null);
     el('bdBody').innerHTML=bodyFor(b);
     el('bdTabs').querySelectorAll('button').forEach(btn=>btn.classList.toggle('active',btn.dataset.bdTab===tab));
     if(tab==='run' && !preRunNow && animate) startDemo(b); else stopDemo();
+  }
+  function repairShards(){
+    const b=batches.find(x=>x.id===curId); if(!b||b.run!=='待修复'||b.repairing) return;
+    b.repairing=true;
+    render(curId,{animate:false});
+    setTimeout(()=>{
+      b.repairing=false;
+      b.run='已完成'; b.runClass='green'; b.progress=100; b.repairCompleted=true;
+      render(curId,{animate:false});
+      const tp=document.getElementById('tipFloat'); if(tp) tp.classList.remove('show');
+      if(typeof renderBatches==='function') renderBatches();
+      if(typeof applyBatchView==='function' && typeof state!=='undefined' && state.currentBatchId===b.id) applyBatchView(b.id);
+      toast('分片修复完成', b.id+' 的失败分片已重跑完成；结束时间与总耗时仍按原跑批统计。');
+    },1500);
   }
   function manualRefresh(){
     const b=batches.find(x=>x.id===curId); if(!b) return;
@@ -5101,6 +5158,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     const trig=e.target.closest('[data-detail-modal]');
     if(trig){ e.preventDefault(); e.stopPropagation(); open(trig.dataset.detailModal); return; }
     if(e.target.closest('#bdRefresh')){ e.preventDefault(); manualRefresh(); return; }
+    if(e.target.closest('#bdRepairBtn')){ e.preventDefault(); repairShards(); return; }
     if(e.target.closest('#bdClose')){ close(); return; }
     if(e.target.closest('[data-bd-tab]')){ tab=e.target.closest('[data-bd-tab]').dataset.bdTab; const b=batches.find(x=>x.id===curId); if(b) render(curId); return; }
     const ro=e.target.closest('[data-bd-report-open]');
@@ -5215,7 +5273,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
   const EXTRA = [
     {strategyVersion:'12',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'用于 UG OD 客群的风险调额，默认输出最终额度并推送 LMS / DigiOps。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'胡唐',createdAt:'2026-03-12 10:24',updatedAt:'2026-11-09 18:42'},
     {strategyVersion:'8',versionType:'正式',reportScene:'贷前',reportGen:'自动生成',description:'UG OD 客群风险评分月度刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'李敏',createdAt:'2026-04-02 14:08',updatedAt:'2026-11-08 09:15'},
-    {strategyVersion:'3',versionType:'测试',reportScene:'无报告',reportGen:'—',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
+    {strategyVersion:'3',versionType:'测试',reportScene:'贷中',reportGen:'自动生成',description:'Ghana BL 营销策略试运行，暂不自动生成报告。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'王磊',createdAt:'2026-09-18 16:30',updatedAt:'2026-11-06 11:20'},
     {strategyVersion:'21',versionType:'正式',reportScene:'贷中',reportGen:'自动生成',description:'Uganda 用户标签按日刷新。',notifyEvents:['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'],createdBy:'陈静',createdAt:'2026-05-27 09:05',updatedAt:'2026-11-10 08:36'}
   ];
   tasks.forEach((t,i)=>{ const e=EXTRA[i]||{}; Object.keys(e).forEach(k=>{ if(t[k]==null||t[k]==='') t[k]=e[k]; });
@@ -5407,7 +5465,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     t.versionType=document.getElementById('dtVersionType')?.value||t.versionType;
     t.strategyVersion=document.getElementById('dtVersion')?.value||t.strategyVersion;
     t.reportScene=document.getElementById('dtReportScene')?.value||t.reportScene;
-    const rg=document.getElementById('dtReportGen')?.value||''; t.reportGen=(t.reportScene==='无报告')?'—':((rg&&rg!=='—')?rg:'自动生成');
+    const rg=document.getElementById('dtReportGen')?.value||''; t.reportGen=(rg&&rg!=='—')?rg:'自动生成';
     t.updatedAt=nowStamp();
     t.notifyEvents=['SLICE_ANOMALY','BATCH_FAILED','BATCH_DONE','REPORT_RESULT'];
     fillTaskDetail(t); setTaskDetailEditable(false); renderTasks(document.getElementById('taskSearch')?.value||'');
@@ -5439,7 +5497,6 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
 
   /* ---------------- 发起跑批 ---------------- */
   let runTaskId=null, runExecMode='immediate', cmpSelectedId=null;
-  const isNoReportTask=t=>!!t && t.reportScene==='无报告';
   window.setRunExecMode=setRunExecMode;
   function setRunExecMode(mode){
     runExecMode=mode;
@@ -5479,7 +5536,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     document.getElementById('cmpError')?.classList.remove('show');
     document.getElementById('cmpResults')?.classList.remove('show');
     setRunExecMode('immediate');
-    const cmpSec=document.getElementById('cmpSection'); if(cmpSec) cmpSec.style.display=isNoReportTask(t)?'none':'';
+    const cmpSec=document.getElementById('cmpSection'); if(cmpSec) cmpSec.style.display='';
     const slice=document.getElementById('runSliceDate');
     if(slice){ const d=new Date(); d.setDate(d.getDate()-1); slice.value=fmtISODate(d); }
     const schedule=document.getElementById('runScheduleAt');
@@ -5506,7 +5563,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
       if(at.slice(0,10)<todayISO){ toast('计划启动时间无效','预约时间不得早于今天。'); document.getElementById('runScheduleAt')?.focus(); return; }
       if(slice>at.slice(0,10)){ toast('切片日期晚于计划启动','请调整切片日期或计划启动时间。'); return; }
     }
-    if(!isNoReportTask(t) && !cmpSelectedId){
+    if(!cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
       document.getElementById('cmpResults')?.classList.remove('show');
       document.getElementById('cmpSearchInput')?.focus();
@@ -5519,17 +5576,17 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     batches.unshift({ id, batchName, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
       requestedAt, plannedStartAt:(runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):''),
       groupId:(t.dataScope||'').split(' · ')[0]||'limitIncreaseGroupV1',
-      sliceAt:slice+' 21:50', compareBatch:(isNoReportTask(t)?null:cmpSelectedId), startMode:runExecMode,
+      sliceAt:slice+' 21:50', compareBatch:cmpSelectedId, startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
       downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--', isNew:true });
-    if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,published:false,pushStatus:'pending'}; }
+    if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,reportStatus:'idle',published:false,pushStatus:'pending'}; }
     closeRunTaskModal();
     if(window.__listPage) window.__listPage.batch=1;
     if(typeof state!=='undefined'){ state.batchQuery=''; state.batchStatus=''; state.batchTaskFilter=null; }
     if(document.getElementById('batchSearch')) document.getElementById('batchSearch').value='';
     if(document.getElementById('batchStatusFilter')) document.getElementById('batchStatusFilter').value='';
     if(typeof renderBatches==='function') renderBatches();
-    toast('跑批已发起',`${id}（${batchName}）已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice}${isNoReportTask(t)?'':' · 对比 '+cmpSelectedId}。`);
+    toast('跑批已发起',`${id}（${batchName}）已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice} · 对比 ${cmpSelectedId}。`);
   }
 
   /* ---------------- 绑定 ---------------- */
@@ -5613,7 +5670,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
 
 (function(){
   const tip=document.createElement('div'); tip.id='tipFloat'; document.body.appendChild(tip);
-  const conv=b=>{ if(b.title){ b.dataset.tip=b.title; b.removeAttribute('title'); } };
+  const conv=b=>{ if(!b.title) return; if(b.hasAttribute('data-native-tip')) return; b.dataset.tip=b.title; b.removeAttribute('title'); };
   document.querySelectorAll('button[title]').forEach(conv);
   new MutationObserver(muts=>{
     for(const m of muts) for(const n of m.addedNodes){
@@ -6020,5 +6077,19 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
 })();
 </script>
 
+<script>
+(function(){
+  /* 顶栏时间：乌干达当地时间 EAT（UTC+3） */
+  var el=document.getElementById('topClock'); if(!el) return;
+  function tick(){
+    var d=new Date(Date.now()+3*3600*1000);
+    var hh=String(d.getUTCHours()).padStart(2,'0');
+    var mm=String(d.getUTCMinutes()).padStart(2,'0');
+    el.textContent='EAT '+hh+':'+mm;
+    el.setAttribute('title','乌干达当地时间（EAT, UTC+3）');
+  }
+  tick(); setInterval(tick,15000);
+})();
+</script>
 </body>
 </html>
