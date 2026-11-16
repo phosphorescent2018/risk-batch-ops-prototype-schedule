@@ -5833,8 +5833,10 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     const tw=tip.offsetWidth||120;
     const cx=r.left+r.width/2;
     tip.style.left=Math.min(Math.max(cx,tw/2+8),Math.max(tw/2+8,window.innerWidth-tw/2-8))+'px';
-    tip.style.top=(r.top-6)+'px';
-    tip.style.transform='translate(-50%,-100%)';
+    const _th=tip.offsetHeight||24;
+    const _above=r.top>(_th+14);
+    tip.style.top=(_above?r.top-6:r.bottom+6)+'px';
+    tip.style.transform=_above?'translate(-50%,-100%)':'translate(-50%,0)';
     tip.classList.add('show');
   });
   document.addEventListener('mouseout', e=>{
