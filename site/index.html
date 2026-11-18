@@ -2340,7 +2340,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
           <div class="section-title-row"><div><h3>Batch 执行参数</h3><p>这些字段属于本次 Batch，不回写到 Task 模板。</p></div><span class="badge gray">Batch 级</span></div>
           <div class="form-grid">
             <input type="hidden" id="batchBusinessDate" value="2026-10-23" />
-            <div class="form-field" id="batchScheduleField"><label>跑批时间</label><input class="input mono" type="datetime-local" id="batchScheduleAt" value="2026-10-23T22:00" step="60" /><small>精确到分钟，作为 Batch 的计划启动时间。</small></div>
+            <div class="form-field" id="batchScheduleField"><label>跑批时间</label><input class="input mono" type="date" id="batchScheduleAt" value="2026-10-23" /></div>
             <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="batchSliceDate" value="2026-10-21" /><small id="batchSliceRuleHint">精确到天；可指定任意已就绪切片，核验时会检查该日分区与完整性。</small></div>
             <div class="form-field full"><label>人群组</label><div class="group-picker compact" id="batchGroupPicker" role="listbox" aria-label="选择本次 Batch 人群组"></div><input type="hidden" id="batchGroupSelect" value="limitIncreaseGroupV1"><small id="batchGroupHint">可多选，按并集计算；创建后自动冻结版本和成员快照。</small></div>
             <div class="form-field"><label>运行数据源</label><div class="segmented" id="batchInputSourceModes"><button class="active" data-batch-input-source="latest">指定切片</button><button data-batch-input-source="batch">历史 Batch 结果</button></div><small id="batchInputSourceHint">使用指定切片日期，并校验对应同一日期的 8 张表。</small></div>
@@ -2566,7 +2566,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
             <div class="form-field full"><label>执行方式 <span class="req">*</span></label>
               <select class="select" id="runExecMode" aria-label="执行方式" style="height:38px;width:220px;max-width:220px;"><option value="immediate">立即执行</option><option value="scheduled">预约执行</option></select>
             </div>
-            <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间 <span class="req">*</span></label><input class="input mono" type="datetime-local" id="runScheduleAt" step="60" /></div>
+            <div class="form-field" id="runScheduleField" style="display:none"><label>计划启动时间 <span class="req">*</span></label><input class="input mono" type="date" id="runScheduleAt" /></div>
             <div class="form-field"><label>使用切片日期 <span class="req">*</span></label><input class="input mono" type="date" id="runSliceDate" /></div>
           </div>
         </div>
@@ -4424,7 +4424,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       return {...base,sopProfileId:profile,sop_profile_id:profile,isLateRequest:late,is_late_request:late,requestLeadWorkingDays:lead,request_lead_working_days:lead,dataReadyDeadline:deadline?fmtShortDate(deadline):'启动前4小时',data_ready_deadline:deadline?fmtShortDate(deadline):'启动前4小时',lateRequestNote:late?'申请距计划启动不足3个工作日':'' ,late_request_note:late?'申请距计划启动不足3个工作日':'',autoCheckpoints:checkpoints,auto_checkpoints:checkpoints.map(c=>({code:c.code,scheduled_at:c.time,title:c.title}))};
     }
     function updateBatchRequestMeta(){
-      const scheduledRaw=$('#batchScheduleAt')?.value||'2026-10-23T22:00';
+      const scheduledRaw=$('#batchScheduleAt')?.value||'2026-10-23';
       const scheduledAt=scheduledRaw.replace('T',' ');
       const businessDate=scheduledAt.slice(0,10);
       if($('#batchBusinessDate')) $('#batchBusinessDate').value=businessDate;
@@ -4495,7 +4495,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     }
 
     function createBatchFromRequest() {
-      const scheduledAt=($('#batchScheduleAt').value || '2026-10-23T22:00').replace('T',' ');
+      const scheduledAt=($('#batchScheduleAt').value || '2026-10-23').slice(0,10);
       const businessDate=scheduledAt.slice(0,10);
       const compareText=$('#batchCompareSelect').value;
       const compareBatch=compareText==='不对比'?'—':compareText.split(' · ')[0];
@@ -4544,7 +4544,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       state.currentBatchOpco=b.opco || state.currentBatchOpco || currentTaskOpco();
       $('#batchRequestBackdrop').classList.remove('hidden'); document.body.style.overflow='hidden';
       $('#batchBusinessDate').value=b.businessDate || b.requestedAt.slice(0,10);
-      $('#batchScheduleAt').value=(b.scheduleAt || b.requestedAt).replace(' ','T');
+      $('#batchScheduleAt').value=(b.scheduleAt || b.requestedAt).slice(0,10);
       $('#batchSliceDate').value=b.sliceDate || b.expectedSliceDate || '2026-10-21';
       if($('#batchCheckMode')) $('#batchCheckMode').value=b.autoCheckMode || 'auto';
       if($('#batchRunMode')) $('#batchRunMode').value=b.autoRunMode || 'auto';
