@@ -5554,7 +5554,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         <td data-col="updatedAt"><span class="mono">${t.updatedAt||'—'}</span></td>
         <td data-col="actions"><div class="task-actions">
           <button class="btn btn-sm primary" data-run-task-modal="${t.id}" title="发起跑批：用该 Task 创建新批次" data-tip="发起跑批：用该 Task 创建新批次">发起跑批</button>
-          <button class="btn btn-sm" data-detail-task="${t.id}" title="查看该 Task 的配置与最近批次" data-tip="查看该 Task 的配置与最近批次">详情</button>
+          <button class="btn btn-sm" data-detail-task="${t.id}" title="查看该 Task 的配置" data-tip="查看该 Task 的配置">详情</button>
           <button class="btn btn-sm danger" data-delete-task="${t.id}" title="删除该 Task（不影响已生成的历史批次）" data-tip="删除该 Task（不影响已生成的历史批次）">删除</button>
         </div></td>
       </tr>`).join(''):'<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--ink-400)">没有符合条件的 Task</td></tr>';
