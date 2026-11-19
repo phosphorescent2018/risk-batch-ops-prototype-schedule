@@ -3827,7 +3827,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const rateText = (successCount!=null && userCount) ? ((successCount/userCount*100).toFixed(1)+'%') : '—';
         /* 运行中 / 失败 / 已终止：该列展示执行进度，只有成功（及待修复）才读作成功率 */
         const progCell = ['运行中','失败','已终止'].includes(runLabel);
-        const rateCellText = progCell ? ('进度 '+(Number(b.progress)||0).toFixed(1)+'%') : rateText;
+        const rateCellText = progCell ? ((Number(b.progress)||0).toFixed(1)+'%') : rateText;
         const rateCellTitle = progCell ? '当前执行进度，不代表成功率' : (runLabel==='待修复' ? '已完成人数占批次人数比例' : '成功人数占批次人数比例');
         const execStart=hasRunList ? (b.startedAt || b.requestedAt || '—') : '—';
         const execEnd=hasRunList ? (b.endedAt || '—') : '—';
