@@ -2721,13 +2721,6 @@ window.listPagerHtml=function(target,total,pg,pages,per){
       let n=0; for(const ch of ts) n=(n*31+ch.charCodeAt(0))%60;
       return ts+':'+String(n).padStart(2,'0');
     }
-    /* 核验 24h 截止：与 verifyInfoOf 同一套起点（verifyStartedAt → sliceAt → requestedAt） */
-    function verifyDeadlineOf(b){
-      const bs=(typeof batchStates!=='undefined'&&batchStates[b&&b.id])||{};
-      const since=parseTs(bs.verifyStartedAt||(b&&b.sliceAt)||(b&&b.requestedAt));
-      return isNaN(since)?'—':fmtDateTime(new Date(since+VERIFY_TIMEOUT_MS));
-    }
-
     const runGroupProfiles = {
       limitIncreaseGroupV1:{name:'limitIncreaseGroupV1',description:'近 30 天活跃、额度使用率与风险状态满足升额前置条件。',count:589272,matched:572481,runnable:568902,version:'v1.3',updated:'10-28 23:40'},
       limitDeratingGroupBadDebtRisk:{name:'limitDeratingGroupBadDebtRisk',description:'命中坏账风险规则、需要进入降额评估的客户人群。',count:126480,matched:122681,runnable:121947,version:'v2.1',updated:'10-28 22:10'},
@@ -3081,34 +3074,26 @@ window.listPagerHtml=function(target,total,pg,pages,per){
     function manifestCounts(m=currentManifest()) {
       return m.checks.reduce((a,c) => { a[c.result]=(a[c.result]||0)+1; return a; }, {});
     }
-    const VERIFY_TIMEOUT_MS = 24 * 60 * 60 * 1000;
     function parseTs(v){ if(!v) return NaN; const d=new Date(String(v).replace(' ','T')); return isNaN(d.getTime())?NaN:d.getTime(); }
-    /* 批次级核验状态：待核验 / 核验中 / 核验通过 / 核验失败；待核验、核验中超过 24 小时自动判失败 */
+    /* 批次级核验状态只保留三态：待核验 / 核验中 / 核验通过；阻断与失败由核验清单、进行状态表达 */
     function verifyInfoOf(b){
-      if(!b) return {key:'pending', label:'待核验', cls:'gray', title:'等待核验', spinning:false, timedOut:false};
+      if(!b) return {key:'pending', label:'待核验', cls:'gray', title:'等待核验', spinning:false};
       const bs=(typeof batchStates!=='undefined'&&batchStates[b.id])||{};
       const m=getManifest(b.id), mc=manifestCounts(m);
       let key=bs.verifyStatus;
+      if(key==='failed'||key==='blocked') key='';
       if(!key){
-        if(m.status==='FAILED'||(mc.BLOCK||0)>0||(mc.WARN||0)>0) key='failed';
-        else if(m.status==='CHECKING') key='checking';
-        else if((mc.PENDING||0)>0||m.status==='WAITING_CHECK') key='pending';
+        if(m.status==='CHECKING') key='checking';
+        else if(m.status==='WAITING_CHECK'||m.status==='FAILED'||(mc.PENDING||0)>0||(mc.BLOCK||0)>0||(mc.WARN||0)>0) key='pending';
         else key='passed';
       }
-      const MAP={pending:['待核验','gray'],checking:['核验中','blue'],passed:['核验通过','green'],failed:['核验失败','red']};
-      let pair=MAP[key]||MAP.pending, label=pair[0], cls=pair[1], timedOut=false, title=label;
-      if(key==='pending'||key==='checking'){
-        const since=parseTs(bs.verifyStartedAt||b.sliceAt||b.requestedAt);
-        const nowRef=parseTs(b.endedAt||b.startedAt||b.requestedAt||b.businessDate);
-        if(!isNaN(since)&&!isNaN(nowRef)&&(nowRef-since)>=VERIFY_TIMEOUT_MS){
-          timedOut=true; label='核验失败'; cls='red'; title='超过 24 小时切片未完成，自动判定失败';
-        }else{
-          title=key==='checking'?'核验进行中':'等待核验 · 超过 24 小时切片未完成将自动判定失败';
-        }
-      }else if(key==='failed'){
-        title='核验失败，请查看核验清单中的失败项';
-      }
-      return {key:timedOut?'failed':key, label:label, cls:cls, title:title, spinning:(!timedOut&&key==='checking'), timedOut:timedOut};
+      if(!['pending','checking','passed'].includes(key)) key='pending';
+      const MAP={pending:['待核验','gray','等待核验'],checking:['核验中','blue','核验进行中'],passed:['核验通过','green','核验通过']};
+      const [label,cls]=MAP[key];
+      let title=MAP[key][2];
+      if(key==='pending'&&(m.status==='FAILED'||(mc.BLOCK||0)>0)) title='等待核验 · 核验清单存在阻断项';
+      else if(key==='pending'&&(mc.WARN||0)>0) title='等待核验 · 核验清单存在待确认风险';
+      return {key:key, label:label, cls:cls, title:title, spinning:key==='checking'};
     }
     function verifyChip(b){
       const v=verifyInfoOf(b);
