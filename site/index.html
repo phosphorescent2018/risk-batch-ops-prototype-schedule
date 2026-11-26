@@ -2572,7 +2572,11 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         </div>
         <div class="modal-section" id="cmpSection">
           <div class="modal-section-title">报告对比批次 <span class="req">*</span></div>
-          <div class="form-field full cmp-search">
+          <div class="form-field full">
+            <label>是否对比 <span class="req">*</span></label>
+            <div class="segmented" id="cmpModeSeg"><button type="button" class="active" data-cmp-mode="compare">对比报告</button><button type="button" data-cmp-mode="none">不对比报告</button></div>
+          </div>
+          <div class="form-field full cmp-search" id="cmpSearchWrap">
             <label>搜索并选中一条 Batch <span class="req">*</span></label>
             <input class="input" id="cmpSearchInput" type="search" autocomplete="off" placeholder="输入 Batch ID 搜索（仅已完成批次）" />
             <div class="cmp-results" id="cmpResults"></div>
@@ -4868,6 +4872,7 @@ window.listPagerHtml=function(target,total,pg,pages,per){
         const group = e.target.closest('.segmented');
         $$('button', group).forEach(b => b.classList.remove('active'));
         button.classList.add('active');
+        if (button.dataset.cmpMode) window.setCmpMode?.(button.dataset.cmpMode);
         if (button.dataset.runMode) {
           const isReuse = button.dataset.runMode === 'reuse';
           if ($('#sourceBatchSelect')) $('#sourceBatchSelect').value = isReuse ? 'B20260914001 · 2026-09-14' : '不适用';
@@ -5633,7 +5638,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
   }
 
   /* ---------------- 发起跑批 ---------------- */
-  let runTaskId=null, runExecMode='immediate', cmpSelectedId=null;
+  let runTaskId=null, runExecMode='immediate', cmpSelectedId=null, cmpMode='compare';
   window.setRunExecMode=setRunExecMode;
   function setRunExecMode(mode){
     runExecMode=mode;
@@ -5664,9 +5669,20 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     document.getElementById('cmpPicked')?.classList.remove('show');
     renderCompareResults('');
   }
+  function setCmpMode(mode){
+    cmpMode=mode;
+    document.querySelectorAll('#cmpModeSeg button').forEach(b=>b.classList.toggle('active',b.dataset.cmpMode===mode));
+    const wrap=document.getElementById('cmpSearchWrap'); if(wrap) wrap.style.display=mode==='compare'?'':'none';
+    if(mode==='none'){
+      cmpSelectedId=null;
+      document.getElementById('cmpError')?.classList.remove('show');
+      document.getElementById('cmpResults')?.classList.remove('show');
+    }
+  }
+  window.setCmpMode=setCmpMode;
   function openRunTaskModal(id){
     const t=tasks.find(x=>x.id===id); if(!t) return;
-    runTaskId=id; cmpSelectedId=null;
+    runTaskId=id; cmpSelectedId=null; cmpMode='compare'; setCmpMode('compare');
     const input=document.getElementById('cmpSearchInput'); if(input) input.value='';
     const bn=document.getElementById('runBatchName'); if(bn) bn.value='';
     document.getElementById('cmpPicked')?.classList.remove('show');
@@ -5700,7 +5716,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
       if(at.slice(0,10)<todayISO){ toast('计划启动时间无效','预约时间不得早于今天。'); document.getElementById('runScheduleAt')?.focus(); return; }
       if(slice>at.slice(0,10)){ toast('切片日期晚于计划启动','请调整切片日期或计划启动时间。'); return; }
     }
-    if(!cmpSelectedId){
+    if(cmpMode==='compare' && !cmpSelectedId){
       document.getElementById('cmpError')?.classList.add('show');
       document.getElementById('cmpResults')?.classList.remove('show');
       document.getElementById('cmpSearchInput')?.focus();
@@ -5713,7 +5729,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     batches.unshift({ id, batchName, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
       requestedAt, plannedStartAt:(runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):''),
       groupId:(t.dataScope||'').split(' · ')[0]||'limitIncreaseGroupV1',
-      sliceAt:slice+' 21:50', compareBatch:cmpSelectedId, startMode:runExecMode,
+      sliceAt:slice+' 21:50', compareBatch:cmpMode==='none'?'—':cmpSelectedId, startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
       downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--', isNew:true });
     if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,reportStatus:'idle',published:false,pushStatus:'pending'}; }
@@ -5723,7 +5739,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     if(document.getElementById('batchSearch')) document.getElementById('batchSearch').value='';
     if(document.getElementById('batchStatusFilter')) document.getElementById('batchStatusFilter').value='';
     if(typeof renderBatches==='function') renderBatches();
-    toast('跑批已发起',`${id}（${batchName}）已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice} · 对比 ${cmpSelectedId}。`);
+    toast('跑批已发起',`${id}（${batchName}）已创建 · ${runExecMode==='scheduled'?'预约执行':'立即执行'} · 切片 ${slice}${cmpMode==='compare'?' · 对比 '+cmpSelectedId:''}。`);
   }
 
   /* ---------------- 绑定 ---------------- */
