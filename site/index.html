@@ -5644,22 +5644,12 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     const box=document.getElementById('cmpResults'); if(!box) return;
     const kw=(q||'').trim().toLowerCase();
     const list=batches.filter(b=>b.run==='已完成'&&(!kw||b.id.toLowerCase().includes(kw))).slice(0,8);
-    const noneItem='<button type="button" class="cmp-item" data-cmp-pick="__none__"><strong>本次不做对比</strong><span>报告不关联对比批次</span></button>';
-    box.innerHTML=noneItem+(list.length
+    box.innerHTML=list.length
       ? list.map(b=>`<button type="button" class="cmp-item" data-cmp-pick="${b.id}"><strong>${b.id} · ${b.businessDate||''}</strong><span>${b.opco||''} · ${b.run} · ${b.people||'--'} 人</span></button>`).join('')
-      : '<div class="cmp-empty">没有匹配的已完成批次</div>');
+      : '<div class="cmp-empty">没有匹配的已完成批次</div>';
     box.classList.add('show');
   }
   function pickCompareBatch(id){
-    if(id==='__none__'){
-      cmpSelectedId='__none__';
-      const inp=document.getElementById('cmpSearchInput'); if(inp) inp.value='本次不做对比';
-      const t=document.getElementById('cmpPickedText'); if(t) t.textContent='已选中 本次不做对比';
-      document.getElementById('cmpPicked')?.classList.add('show');
-      document.getElementById('cmpError')?.classList.remove('show');
-      document.getElementById('cmpResults')?.classList.remove('show');
-      return;
-    }
     const b=batches.find(x=>x.id===id); if(!b) return;
     cmpSelectedId=id;
     const input=document.getElementById('cmpSearchInput'); if(input) input.value=b.id;
@@ -5723,7 +5713,7 @@ t.dataScope=document.getElementById('dtDataScope')?.value||t.dataScope;
     batches.unshift({ id, batchName, taskId:t.id, opco:t.opco, businessDate:fmtISODate(now), expectedSliceDate:slice,
       requestedAt, plannedStartAt:(runExecMode==='scheduled'&&scheduledAt?scheduledAt.replace('T',' '):''),
       groupId:(t.dataScope||'').split(' · ')[0]||'limitIncreaseGroupV1',
-      sliceAt:slice+' 21:50', compareBatch:cmpSelectedId==='__none__'?'—':cmpSelectedId, startMode:runExecMode,
+      sliceAt:slice+' 21:50', compareBatch:cmpSelectedId, startMode:runExecMode,
       run:'待启动', runClass:'gray', progress:0, review:'未开始', reviewClass:'gray',
       downstream:'未发布', downstreamClass:'gray', report:'0 / 4', reportClass:'gray', people:'--', isNew:true });
     if(typeof batchStates!=='undefined' && batchStates){ batchStates[id]={interventionApplied:false,packageValidated:false,reportGenerated:false,reportStatus:'idle',published:false,pushStatus:'pending'}; }
